@@ -42,7 +42,7 @@ export default function DashboardPage() {
           <p className="subheading">Here&apos;s your health at a glance.</p>
         </div>
         <button className="date-button">
-          Today <ArrowRight2 size="16" color="#747474" />
+          Today <ArrowRight2 size="16" color="var(--muted-foreground)" />
         </button>
       </div>
 
@@ -53,7 +53,7 @@ export default function DashboardPage() {
             <h2>Keep your rhythm</h2>
             <p className="muted">You&apos;re building a great habit. A little more movement will get you to your goal.</p>
             <button className="soft-button">
-              View activity <ArrowRight2 size="16" color="#747474" />
+              View activity <ArrowRight2 size="16" color="var(--muted-foreground)" />
             </button>
           </div>
           <StepRing />
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           <article className="metric-card blue">
             <div className="metric-top">
               <span>Steps</span>
-              <Activity size="18" color="#4f9eb3" />
+              <Activity size="18" color="var(--accent-blue)" />
             </div>
             <strong>8,420</strong>
             <small>84% of daily goal</small>
@@ -72,7 +72,7 @@ export default function DashboardPage() {
           <article className="metric-card peach">
             <div className="metric-top">
               <span>Calories</span>
-              <Flash size="18" color="#c97d63" />
+              <Flash size="18" color="var(--accent-peach)" />
             </div>
             <strong>426 <em>kcal</em></strong>
             <small>Estimated burned</small>
@@ -81,7 +81,7 @@ export default function DashboardPage() {
           <article className="metric-card green">
             <div className="metric-top">
               <span>Distance</span>
-              <TrendUp size="18" color="#6d9750" />
+              <TrendUp size="18" color="var(--accent-green)" />
             </div>
             <strong>6.2 <em>km</em></strong>
             <small>Distance walked</small>
@@ -90,7 +90,7 @@ export default function DashboardPage() {
           <article className="metric-card lavender">
             <div className="metric-top">
               <span>Active time</span>
-              <Chart2 size="18" color="#8f6bb3" />
+              <Chart2 size="18" color="var(--accent-lavender)" />
             </div>
             <strong>74 <em>min</em></strong>
             <small>Active today</small>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
 
         <StaggerItem className="insight-card">
           <div className="insight-icon">
-            <Lamp size="20" color="#8f6bb3" />
+            <Lamp size="20" color="var(--accent-lavender)" />
           </div>
           <div>
             <p className="card-kicker">A little insight</p>
@@ -199,7 +199,7 @@ export default function DashboardPage() {
         {!dismissed && (
           <StaggerItem className="recommendation">
             <div className="recommendation-icon">
-              <Drop size="20" color="#4f9eb3" />
+              <Drop size="20" color="var(--accent-blue)" />
             </div>
             <div>
               <p className="card-kicker">Daily recommendation</p>

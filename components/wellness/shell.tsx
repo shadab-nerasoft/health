@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState, type ComponentType } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useTheme } from 'next-themes'
 import {
   Activity,
   ArrowLeft2,
@@ -15,8 +16,10 @@ import {
   Heart,
   Home2,
   Lamp,
+  Moon,
   Notification,
   Setting2,
+  Sun1,
   TrendUp,
   User,
 } from 'iconsax-react'
@@ -55,7 +58,7 @@ function NavLink({
 }: NavLinkDef & { active: boolean; collapsed: boolean }) {
   return (
     <Link href={href} className={`nav-item ${active ? 'active' : ''}`} title={collapsed ? label : undefined}>
-      <Icon size="19" color={active ? '#202124' : '#747474'} variant={active ? 'Bold' : 'Linear'} />
+      <Icon size="19" color={active ? 'var(--foreground)' : 'var(--muted-foreground)'} variant={active ? 'Bold' : 'Linear'} />
       <AnimatePresence initial={false}>
         {!collapsed && (
           <motion.span
@@ -70,6 +73,57 @@ function NavLink({
         )}
       </AnimatePresence>
     </Link>
+  )
+}
+
+function ThemeToggle({ collapsed }: { collapsed: boolean }) {
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
+
+  const isDark = mounted && resolvedTheme === 'dark'
+
+  return (
+    <button
+      className="theme-toggle"
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={collapsed ? (isDark ? 'Light mode' : 'Dark mode') : undefined}
+    >
+      <span className="theme-toggle-icon">
+        <AnimatePresence initial={false} mode="wait">
+          {mounted && (
+            <motion.span
+              key={isDark ? 'moon' : 'sun'}
+              initial={{ opacity: 0, rotate: -90, scale: 0.6 }}
+              animate={{ opacity: 1, rotate: 0, scale: 1 }}
+              exit={{ opacity: 0, rotate: 90, scale: 0.6 }}
+              transition={{ duration: 0.3, ease: easeSmooth }}
+            >
+              {isDark ? (
+                <Moon size="18" color="var(--muted-foreground)" variant="Bold" />
+              ) : (
+                <Sun1 size="18" color="var(--muted-foreground)" variant="Bold" />
+              )}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </span>
+      <AnimatePresence initial={false}>
+        {!collapsed && (
+          <motion.span
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: 'auto' }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.22, ease: easeSmooth }}
+            style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}
+          >
+            {isDark ? 'Dark mode' : 'Light mode'}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </button>
   )
 }
 
@@ -103,7 +157,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
         <div className="sidebar-head">
           <div className="brand">
             <div className="brand-mark">
-              <Activity size="18" color="#202124" variant="Bold" />
+              <Activity size="18" color="var(--background)" variant="Bold" />
             </div>
             <AnimatePresence initial={false}>
               {!collapsed && (
@@ -129,7 +183,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
               animate={{ rotate: collapsed ? 180 : 0 }}
               transition={{ duration: 0.4, ease: easeSmooth }}
             >
-              <ArrowLeft2 size="15" color="#747474" />
+              <ArrowLeft2 size="15" color="var(--muted-foreground)" />
             </motion.span>
           </button>
         </div>
@@ -163,6 +217,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="sidebar-bottom">
+          <ThemeToggle collapsed={collapsed} />
           <NavLink href="/profile" label="Settings" icon={Setting2} active={pathname === '/settings'} collapsed={collapsed} />
           <AnimatePresence initial={false}>
             {!collapsed && (
@@ -177,7 +232,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
                   <strong>Shadab</strong>
                   <span>Personal plan</span>
                 </div>
-                <ArrowRight2 size="16" color="#747474" />
+                <ArrowRight2 size="16" color="var(--muted-foreground)" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -206,12 +261,12 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
               <div className="sidebar-head">
                 <div className="brand">
                   <div className="brand-mark">
-                    <Activity size="18" color="#202124" variant="Bold" />
+                    <Activity size="18" color="var(--background)" variant="Bold" />
                   </div>
                   <span>wellnest</span>
                 </div>
                 <button className="collapse-toggle" onClick={() => setMobileOpen(false)} aria-label="Close menu">
-                  <CloseCircle size="18" color="#747474" />
+                  <CloseCircle size="18" color="var(--muted-foreground)" />
                 </button>
               </div>
               <p className="nav-label">Overview</p>
@@ -234,12 +289,12 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
       <section className="content">
         <header className="topbar">
           <button className="mobile-menu" aria-label="Open menu" onClick={() => setMobileOpen(true)}>
-            <HambergerMenu size="21" color="#202124" />
+            <HambergerMenu size="21" color="var(--foreground)" />
           </button>
           <div className="mobile-brand">wellnest</div>
           <div className="topbar-actions">
             <button className="icon-button" aria-label="Notifications">
-              <Notification size="19" color="#202124" />
+              <Notification size="19" color="var(--foreground)" />
             </button>
             <Link href="/profile" className="avatar large" aria-label="Profile">
               S
@@ -252,7 +307,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
             const active = pathname === link.href
             return (
               <Link key={link.href} href={link.href} className={`nav-item ${active ? 'active' : ''}`}>
-                <link.icon size="19" color={active ? '#202124' : '#747474'} variant={active ? 'Bold' : 'Linear'} />
+                <link.icon size="19" color={active ? 'var(--nav-active)' : 'var(--muted-foreground)'} variant={active ? 'Bold' : 'Linear'} />
                 <span>{link.label}</span>
               </Link>
             )

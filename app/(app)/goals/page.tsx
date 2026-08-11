@@ -24,7 +24,7 @@ export default function GoalsPage() {
           <p className="subheading">Track the targets that matter most to your routine.</p>
         </div>
         <button className="date-button">
-          <Add size="16" color="#747474" /> New goal
+          <Add size="16" color="var(--muted-foreground)" /> New goal
         </button>
       </div>
 
@@ -57,8 +57,8 @@ export default function GoalsPage() {
             <strong>6-day streak</strong>
             <span>Hit every goal 6 days running — one more for a new personal best.</span>
           </div>
-          <div className="empty-state-icon" style={{ background: '#fff' }}>
-            <Flag size="22" color="#c97d63" variant="Bold" />
+          <div className="empty-state-icon" style={{ background: 'var(--card)' }}>
+            <Flag size="22" color="var(--accent-peach)" variant="Bold" />
           </div>
         </StaggerItem>
       </Stagger>

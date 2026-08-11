@@ -47,12 +47,15 @@ export default function WaterPage() {
             <div className="quick-actions">
               {quickAdds.map((amount) => (
                 <button key={amount} onClick={() => addWater(amount)}>
-                  <Drop size="16" color="#4f9eb3" /> +{amount}ml
+                  <Drop size="16" color="var(--accent-blue)" /> +{amount}ml
                 </button>
               ))}
             </div>
           </div>
-          <div className="water-ring" style={{ background: `conic-gradient(#4f9eb3 0 ${percent}%, rgba(255,255,255,.55) ${percent}% 100%)` }}>
+          <div
+            className="water-ring"
+            style={{ background: `conic-gradient(var(--accent-blue) 0 ${percent}%, var(--ring-track) ${percent}% 100%)` }}
+          >
             <div>
               <strong>{(loggedMl / 1000).toFixed(1)}L</strong>
               <span>{percent}% of goal</span>

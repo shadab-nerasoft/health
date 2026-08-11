@@ -40,28 +40,28 @@ export default function ActivityPage() {
             <span>Total steps</span>
             <strong>8,420</strong>
             <b className="up">
-              <TrendUp size="13" color="#6d9750" /> +12.4% vs yesterday
+              <TrendUp size="13" color="var(--success)" /> +12.4% vs yesterday
             </b>
           </div>
           <div className="stat-card">
             <span>Distance</span>
             <strong>6.2 <em>km</em></strong>
             <b className="up">
-              <TrendUp size="13" color="#6d9750" /> +0.8 km
+              <TrendUp size="13" color="var(--success)" /> +0.8 km
             </b>
           </div>
           <div className="stat-card">
             <span>Calories</span>
             <strong>426 <em>kcal</em></strong>
             <b className="up">
-              <TrendUp size="13" color="#6d9750" /> +48 kcal
+              <TrendUp size="13" color="var(--success)" /> +48 kcal
             </b>
           </div>
           <div className="stat-card">
             <span>Active minutes</span>
             <strong>74 <em>min</em></strong>
             <b className="up">
-              <TrendUp size="13" color="#6d9750" /> +9 min
+              <TrendUp size="13" color="var(--success)" /> +9 min
             </b>
           </div>
         </StaggerItem>
@@ -86,7 +86,7 @@ export default function ActivityPage() {
                   <span>{row.detail}</span>
                 </div>
                 <div className={`timeline-badge metric-card ${row.tone}`}>
-                  <Activity size="16" color="#202124" />
+                  <Activity size="16" color="var(--foreground)" />
                 </div>
               </div>
             ))}

@@ -14,7 +14,7 @@
   --avatar-bg: #e8dff0; --avatar-fg: #6d527c; --recommendation-fg: #6c8756; --success: #6d9750; --danger: #c15b4a;
   --accent-blue: #b6dfe8; --accent-lavender: #c9b5df; --accent-green: #b9d69e; --accent-peach: #e8bca8;
   --tint-blue: #dceff4; --tint-lavender: #e8ddf4; --tint-green: #ddeccf; --tint-peach: #f3dfd4; --tint-peach-soft: #f5e4de;
-  --chart-bar: #c7e2e7; --chart-bar-strong: #8fc5cf;
+  --chart-bar: #c7e2e7; --chart-bar-strong: #8fc5cf; --nav-active: #5b7c92;
   --shadow-xs: 0 4px 10px rgba(40,45,35,.08); --shadow-sm: 0 2px 8px rgba(0,0,0,.05); --shadow-md: 0 8px 25px rgba(40,45,35,.035);
   --shadow-lg: 0 12px 35px rgba(40,45,35,.05); --shadow-drawer: 0 20px 60px rgba(0,0,0,.2); --shadow-nav: 0 8px 25px rgba(40,45,35,.12);
 }
@@ -28,7 +28,7 @@
   --avatar-bg: #2c2438; --avatar-fg: #c9a8de; --recommendation-fg: #9bc47e; --success: #8fc46b; --danger: #e8836c;
   --accent-blue: #5fb2c4; --accent-lavender: #9c82c4; --accent-green: #7fb266; --accent-peach: #d99a71;
   --tint-blue: #16262c; --tint-lavender: #221f30; --tint-green: #1c2a1a; --tint-peach: #2c2019; --tint-peach-soft: #2c2019;
-  --chart-bar: #24414a; --chart-bar-strong: #3a5c66;
+  --chart-bar: #24414a; --chart-bar-strong: #3a5c66; --nav-active: #7fb2cc;
   --shadow-xs: 0 4px 10px rgba(0,0,0,.5); --shadow-sm: 0 2px 8px rgba(0,0,0,.55); --shadow-md: 0 8px 25px rgba(0,0,0,.45);
   --shadow-lg: 0 16px 40px rgba(0,0,0,.55); --shadow-drawer: 0 20px 60px rgba(0,0,0,.7); --shadow-nav: 0 8px 25px rgba(0,0,0,.5);
 }
@@ -53,7 +53,7 @@ button:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 3p
 .sidebar.collapsed { position: relative; }
 .brand, .mobile-brand { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; letter-spacing: -.04em; white-space: nowrap; }
 .brand { padding: 0; }
-.brand-mark { display: grid; flex: none; place-items: center; width: 31px; height: 31px; border-radius: 11px; background: #202124; color: #fff; }
+.brand-mark { display: grid; flex: none; place-items: center; width: 31px; height: 31px; border-radius: 11px; background: var(--foreground); color: var(--background); }
 .mobile-overlay { position: fixed; inset: 0; z-index: 40; border: 0; background: var(--overlay); backdrop-filter: blur(2px); }
 .mobile-drawer { position: fixed; z-index: 41; top: 0; left: 0; bottom: 0; width: min(78vw, 280px); padding: 26px 18px 22px; display: flex; flex-direction: column; background: var(--card); box-shadow: var(--shadow-drawer); }
 .nav-label { margin: 16px 12px 8px; color: var(--text-tertiary); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; }
@@ -64,6 +64,8 @@ nav { display: flex; flex-direction: column; gap: 4px; }
 .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 19px; }
 .theme-toggle { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 14px; background: var(--surface-hover); color: var(--muted-foreground); text-align: left; font-size: 13px; width: 100%; }
 .sidebar.collapsed .theme-toggle { justify-content: center; padding: 0; }
+.theme-toggle-icon { position: relative; display: grid; flex: none; place-items: center; width: 19px; height: 19px; }
+.theme-toggle-icon > span { position: absolute; inset: 0; display: grid; place-items: center; }
 .user-chip { display: flex; align-items: center; gap: 9px; padding: 13px 8px 0; border-top: 1px solid var(--border); }
 .user-chip > div:nth-child(2) { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .user-chip strong { font-size: 12px; }
@@ -279,7 +281,6 @@ nav { display: flex; flex-direction: column; gap: 4px; }
   .bottom-nav { position: fixed; z-index: 10; right: 12px; bottom: 12px; left: 12px; display: flex; flex-direction: row; justify-content: space-around; gap: 2px; padding: 8px 5px; border: 1px solid var(--border); border-radius: 21px; background: var(--bottom-nav-bg); box-shadow: var(--shadow-nav); backdrop-filter: blur(14px); }
   .bottom-nav .nav-item { min-height: 53px; flex-direction: column; justify-content: center; gap: 4px; padding: 5px 10px; font-size: 9px; }
   .bottom-nav .nav-item.active { background: transparent; }
-  .bottom-nav .nav-item.active svg { color: #658095; }
 }
 @media (max-width: 700px) {
   .stat-grid { grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 10px; }

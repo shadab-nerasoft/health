@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Google_Sans, Google_Sans_Flex } from 'next/font/google'
+import { ThemeProvider } from '@/components/wellness/theme-provider'
 import './globals.css'
 
 const googleSans = Google_Sans({
@@ -43,8 +44,11 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light',
-  themeColor: '#f5f6f3',
+  colorScheme: 'light dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f5f6f3' },
+    { media: '(prefers-color-scheme: dark)', color: '#14151a' },
+  ],
 }
 
 export default function RootLayout({
@@ -53,10 +57,16 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`bg-background ${googleSans.variable} ${googleSansFlex.variable}`}>
+    <html
+      lang="en"
+      className={`bg-background ${googleSans.variable} ${googleSansFlex.variable}`}
+      suppressHydrationWarning
+    >
       <body className="antialiased font-sans">
-        {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <ThemeProvider>
+          {children}
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -17,7 +17,7 @@ export default function HeartRatePage() {
       <Stagger className="dashboard-grid">
         <StaggerItem className="empty-state" style={{ gridColumn: '1 / -1' }}>
           <div className="empty-state-icon">
-            <Watch size="26" color="#c15b4a" variant="Bold" />
+            <Watch size="26" color="var(--danger)" variant="Bold" />
           </div>
           <h2>No device connected yet</h2>
           <p>
@@ -25,7 +25,7 @@ export default function HeartRatePage() {
             right here on this page.
           </p>
           <button className="soft-button">
-            <Heart size="16" color="#c15b4a" /> Connect a device
+            <Heart size="16" color="var(--danger)" /> Connect a device
           </button>
         </StaggerItem>
 

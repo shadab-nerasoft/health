@@ -33,28 +33,28 @@ export default function ProgressPage() {
             <span>Average steps</span>
             <strong>8,742</strong>
             <b className="up">
-              <TrendUp size="13" color="#6d9750" /> +12.4%
+              <TrendUp size="13" color="var(--success)" /> +12.4%
             </b>
           </div>
           <div className="stat-card">
             <span>Total distance</span>
             <strong>43.4 <em>km</em></strong>
             <b className="up">
-              <TrendUp size="13" color="#6d9750" /> +5.1 km
+              <TrendUp size="13" color="var(--success)" /> +5.1 km
             </b>
           </div>
           <div className="stat-card">
             <span>Goal completion</span>
             <strong>86%</strong>
             <b className="up">
-              <TrendUp size="13" color="#6d9750" /> +6 pts
+              <TrendUp size="13" color="var(--success)" /> +6 pts
             </b>
           </div>
           <div className="stat-card">
             <span>Current streak</span>
             <strong>6 <em>days</em></strong>
             <b className="up">
-              <TrendUp size="13" color="#6d9750" /> personal best
+              <TrendUp size="13" color="var(--success)" /> personal best
             </b>
           </div>
         </StaggerItem>

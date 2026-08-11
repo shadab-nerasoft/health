@@ -6,28 +6,32 @@ import { Stagger, StaggerItem } from '@/components/wellness/motion'
 const insights = [
   {
     icon: Lamp,
-    color: '#8f6bb3',
+    color: 'var(--accent-lavender)',
+    tint: 'var(--tint-lavender)',
     kicker: 'Timing pattern',
     title: 'Your activity is highest between 6–8 PM.',
     body: 'That evening window is becoming your strongest movement habit — consider scheduling workouts then.',
   },
   {
     icon: TrendUp,
-    color: '#6d9750',
+    color: 'var(--success)',
+    tint: 'var(--tint-green)',
     kicker: 'Weekly trend',
     title: 'Steps are up 12.4% compared to last week.',
     body: "You're building consistent momentum. Keep the current routine to carry it into next week.",
   },
   {
     icon: Flag,
-    color: '#c97d63',
+    color: 'var(--accent-peach)',
+    tint: 'var(--tint-peach)',
     kicker: 'Goal completion',
     title: "You've hit your step goal 5 of the last 7 days.",
     body: 'Two more consistent days would put you on pace for a new monthly best.',
   },
   {
     icon: Clock,
-    color: '#4f9eb3',
+    color: 'var(--accent-blue)',
+    tint: 'var(--tint-blue)',
     kicker: 'Time to goal',
     title: "At this pace, you'll reach today's goal by 7:40 PM.",
     body: 'A short evening walk would get you there closer to 6:30 PM.',
@@ -49,7 +53,7 @@ export default function InsightsPage() {
         <StaggerItem className="insights-list" style={{ gridColumn: '1 / -1' }}>
           {insights.map((insight) => (
             <div className="insight-card" key={insight.title}>
-              <div className="insight-icon" style={{ background: `${insight.color}22` }}>
+              <div className="insight-icon" style={{ background: insight.tint }}>
                 <insight.icon size="20" color={insight.color} variant="Bold" />
               </div>
               <div>
@@ -67,7 +71,7 @@ export default function InsightsPage() {
               <p className="card-kicker">Summary</p>
               <h2>What&apos;s driving your progress</h2>
             </div>
-            <Chart2 size="20" color="#8f6bb3" />
+            <Chart2 size="20" color="var(--accent-lavender)" />
           </div>
           <p className="muted" style={{ marginTop: 18, maxWidth: 560 }}>
             Consistency in the evenings, plus a strong weekend, is carrying your weekly average. Keeping mornings
