@@ -16,7 +16,7 @@ const insights = [
     color: '#6d9750',
     kicker: 'Weekly trend',
     title: 'Steps are up 12.4% compared to last week.',
-    body: 'You&apos;re building consistent momentum. Keep the current routine to carry it into next week.',
+    body: "You're building consistent momentum. Keep the current routine to carry it into next week.",
   },
   {
     icon: Flag,
