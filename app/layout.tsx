@@ -21,7 +21,7 @@ const googleSansFlex = Google_Sans_Flex({
 })
 
 export const metadata: Metadata = {
-  title: 'wellnest — Personal wellness dashboard',
+  title: 'ZSTEPS — Personal wellness dashboard',
   description: 'A calm, personal activity and wellness dashboard for building better daily movement habits.',
   generator: 'v0.app',
   icons: {

@@ -43,17 +43,18 @@ button:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 3p
 
 /* Shell / sidebar / navigation */
 .wellness-app { min-height: 100vh; display: flex; }
-.sidebar { width: 238px; flex: none; overflow: hidden; padding: 30px 18px 22px; display: flex; flex-direction: column; background: var(--card); border-right: 1px solid var(--border); will-change: width; }
+.sidebar { position: sticky; top: 0; align-self: flex-start; height: 100vh; width: 238px; flex: none; overflow-y: auto; overflow-x: hidden; padding: 30px 18px 22px; display: flex; flex-direction: column; background: var(--card); border-right: 1px solid var(--border); will-change: width; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.sidebar::-webkit-scrollbar { width: 5px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
 .sidebar.collapsed { padding: 30px 14px 22px; }
 .sidebar.collapsed .nav-item { justify-content: center; padding: 0; }
 .sidebar-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 0 35px 12px; }
 .sidebar.collapsed .sidebar-head { padding: 0 0 35px 0; justify-content: center; }
 .collapse-toggle { display: grid; flex: none; place-items: center; width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 9px; background: var(--card); }
 .sidebar.collapsed .collapse-toggle { position: absolute; top: 26px; right: -12px; box-shadow: var(--shadow-xs); }
-.sidebar.collapsed { position: relative; }
 .brand, .mobile-brand { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; letter-spacing: -.04em; white-space: nowrap; }
 .brand { padding: 0; }
-.brand-mark { display: grid; flex: none; place-items: center; width: 31px; height: 31px; border-radius: 11px; background: var(--foreground); color: var(--background); }
+.brand-mark { display: grid; flex: none; place-items: center; width: 31px; height: 31px; border-radius: 11px; background: var(--foreground); color: var(--background); font-family: var(--font-display), var(--font-sans), sans-serif; font-size: 16px; font-weight: 700; letter-spacing: -.02em; }
 .mobile-overlay { position: fixed; inset: 0; z-index: 40; border: 0; background: var(--overlay); backdrop-filter: blur(2px); }
 .mobile-drawer { position: fixed; z-index: 41; top: 0; left: 0; bottom: 0; width: min(78vw, 280px); padding: 26px 18px 22px; display: flex; flex-direction: column; background: var(--card); box-shadow: var(--shadow-drawer); }
 .nav-label { margin: 16px 12px 8px; color: var(--text-tertiary); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; }

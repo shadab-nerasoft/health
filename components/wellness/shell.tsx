@@ -134,13 +134,13 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
-    const stored = window.localStorage.getItem('wellnest-sidebar-collapsed')
+    const stored = window.localStorage.getItem('zsteps-sidebar-collapsed')
     if (stored) setCollapsed(stored === '1')
     setHydrated(true)
   }, [])
 
   useEffect(() => {
-    if (hydrated) window.localStorage.setItem('wellnest-sidebar-collapsed', collapsed ? '1' : '0')
+    if (hydrated) window.localStorage.setItem('zsteps-sidebar-collapsed', collapsed ? '1' : '0')
   }, [collapsed, hydrated])
 
   useEffect(() => {
@@ -156,8 +156,8 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
       >
         <div className="sidebar-head">
           <div className="brand">
-            <div className="brand-mark">
-              <Activity size="18" color="var(--background)" variant="Bold" />
+            <div className="brand-mark" aria-hidden="true">
+              Z
             </div>
             <AnimatePresence initial={false}>
               {!collapsed && (
@@ -167,7 +167,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  wellnest
+                  ZSTEPS
                 </motion.span>
               )}
             </AnimatePresence>
@@ -261,9 +261,9 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
               <div className="sidebar-head">
                 <div className="brand">
                   <div className="brand-mark">
-                    <Activity size="18" color="var(--background)" variant="Bold" />
+                    Z
                   </div>
-                  <span>wellnest</span>
+                  <span>ZSTEPS</span>
                 </div>
                 <button className="collapse-toggle" onClick={() => setMobileOpen(false)} aria-label="Close menu">
                   <CloseCircle size="18" color="var(--muted-foreground)" />
@@ -291,7 +291,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
           <button className="mobile-menu" aria-label="Open menu" onClick={() => setMobileOpen(true)}>
             <HambergerMenu size="21" color="var(--foreground)" />
           </button>
-          <div className="mobile-brand">wellnest</div>
+            <div className="mobile-brand">ZSTEPS</div>
           <div className="topbar-actions">
             <button className="icon-button" aria-label="Notifications">
               <Notification size="19" color="var(--foreground)" />

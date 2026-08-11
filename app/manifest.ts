@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'wellnest — Personal wellness dashboard',
-    short_name: 'wellnest',
+    name: 'ZSTEPS — Personal wellness dashboard',
+    short_name: 'ZSTEPS',
     description: 'A calm personal activity and wellness dashboard.',
     start_url: '/',
     display: 'standalone',
