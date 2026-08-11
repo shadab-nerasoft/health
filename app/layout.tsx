@@ -1,6 +1,23 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { Google_Sans, Google_Sans_Flex } from 'next/font/google'
 import './globals.css'
+
+const googleSans = Google_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-sans',
+  adjustFontFallback: false,
+  display: 'swap',
+})
+
+const googleSansFlex = Google_Sans_Flex({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-display',
+  adjustFontFallback: false,
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'wellnest — Personal wellness dashboard',
@@ -36,8 +53,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-background">
-      <body className="antialiased">
+    <html lang="en" className={`bg-background ${googleSans.variable} ${googleSansFlex.variable}`}>
+      <body className="antialiased font-sans">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
