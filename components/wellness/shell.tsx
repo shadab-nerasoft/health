@@ -12,11 +12,11 @@ import {
   CloseCircle,
   Drop,
   Flag,
-  HambergerMenu,
   Heart,
   Home2,
   Lamp,
   Moon,
+  More,
   Notification,
   Setting2,
   Sun1,
@@ -24,6 +24,8 @@ import {
   User,
 } from 'iconsax-react'
 import { easeSmooth, navItemVariants } from './motion'
+import { useWellness } from '@/hooks/use-wellness'
+import { profileInitial } from '@/lib/wellness/store'
 
 type NavLinkDef = { href: string; label: string; icon: ComponentType<any> }
 
@@ -131,6 +133,8 @@ function ThemeToggle({ collapsed }: { collapsed: boolean }) {
 
 export function WellnessShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const { ready, profile } = useWellness()
+  const initial = ready ? profileInitial(profile) : 'Z'
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [hydrated, setHydrated] = useState(false)
@@ -223,18 +227,17 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
           <NavLink href="/profile" label="Settings" icon={Setting2} active={pathname === '/settings'} collapsed={collapsed} />
           <AnimatePresence initial={false}>
             {!collapsed && (
-              <motion.div
-                className="user-chip"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <div className="avatar">S</div>
-                <div>
-                  <strong>Shadab</strong>
-                  <span>Personal plan</span>
-                </div>
-                <ArrowRight2 size="16" color="var(--muted-foreground)" />
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <Link href="/profile" className="user-chip">
+                  <div className="avatar" suppressHydrationWarning>
+                    {initial}
+                  </div>
+                  <div>
+                    <strong suppressHydrationWarning>{ready && profile.name ? profile.name : 'Add your name'}</strong>
+                    <span>Edit profile</span>
+                  </div>
+                  <ArrowRight2 size="16" color="var(--muted-foreground)" />
+                </Link>
               </motion.div>
             )}
           </AnimatePresence>
@@ -291,15 +294,15 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
       <section className="content">
         <header className="topbar">
           <button className="mobile-menu" aria-label="Open menu" onClick={() => setMobileOpen(true)}>
-            <HambergerMenu size="21" color="var(--foreground)" />
+            <More size="22" color="var(--foreground)" variant="Bold" />
           </button>
             <div className="mobile-brand">ZSTEPS</div>
           <div className="topbar-actions">
             <button className="icon-button" aria-label="Notifications">
               <Notification size="19" color="var(--foreground)" />
             </button>
-            <Link href="/profile" className="avatar large" aria-label="Profile">
-              S
+            <Link href="/profile" className="avatar large" aria-label="Profile" suppressHydrationWarning>
+              {initial}
             </Link>
           </div>
         </header>

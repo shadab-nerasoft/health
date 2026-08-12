@@ -23,8 +23,19 @@ export type Goals = {
   distanceKm: number
 }
 
+export type ActivityLevel = 'light' | 'moderate' | 'active'
+
+export type Profile = {
+  name: string
+  age: number | null
+  heightCm: number | null
+  weightKg: number | null
+  activityLevel: ActivityLevel
+}
+
 export type WellnessState = {
   version: 1
+  profile: Profile
   goals: Goals
   days: Record<string, DayRecord>
   waterEntries: WaterEntry[]
@@ -39,6 +50,19 @@ export const STRIDE_METERS = 0.762
 export const KCAL_PER_STEP = 0.04
 export const STEPS_PER_ACTIVE_MINUTE = 110
 
+export const defaultProfile: Profile = {
+  name: '',
+  age: null,
+  heightCm: null,
+  weightKg: null,
+  activityLevel: 'moderate',
+}
+
+/** Initial shown in the avatar; falls back to the brand letter before a name is set. */
+export function profileInitial(profile: Profile) {
+  return profile.name.trim().charAt(0).toUpperCase() || 'Z'
+}
+
 export const defaultGoals: Goals = {
   steps: 10000,
   waterMl: 2500,
@@ -52,7 +76,15 @@ export function todayKey(date = new Date()) {
 }
 
 export function emptyState(): WellnessState {
-  return { version: 1, goals: { ...defaultGoals }, days: {}, waterEntries: [], weights: [], motionPaused: false }
+  return {
+    version: 1,
+    profile: { ...defaultProfile },
+    goals: { ...defaultGoals },
+    days: {},
+    waterEntries: [],
+    weights: [],
+    motionPaused: false,
+  }
 }
 
 export function emptyDay(date = todayKey()): DayRecord {
@@ -71,6 +103,7 @@ export function readState(): WellnessState {
     const parsed = JSON.parse(raw) as Partial<WellnessState>
     return {
       version: 1,
+      profile: { ...defaultProfile, ...(parsed.profile ?? {}) },
       goals: { ...defaultGoals, ...(parsed.goals ?? {}) },
       days: parsed.days ?? {},
       waterEntries: Array.isArray(parsed.waterEntries) ? parsed.waterEntries : [],

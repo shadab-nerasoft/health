@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   type Goals,
+  type Profile,
   type WellnessState,
   clearAll,
   derivedFromSteps,
@@ -86,6 +87,10 @@ export function useWellness() {
     })
   }, [])
 
+  const updateProfile = useCallback((changes: Partial<Profile>) => {
+    setState((current) => ({ ...current, profile: { ...current.profile, ...changes } }))
+  }, [])
+
   const updateGoals = useCallback((changes: Partial<Goals>) => {
     setState((current) => ({ ...current, goals: { ...current.goals, ...changes } }))
   }, [])
@@ -117,6 +122,7 @@ export function useWellness() {
   return {
     ready,
     state,
+    profile: state.profile,
     goals: state.goals,
     today,
     derived,
@@ -129,6 +135,7 @@ export function useWellness() {
     addWater,
     undoWater,
     logWeight,
+    updateProfile,
     updateGoals,
     setMotionPaused,
     resetToday,

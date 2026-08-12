@@ -75,6 +75,25 @@ button:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 3p
 .goal-row.editable .progress-track { grid-area: bar; }
 .goal-row.editable b { grid-area: pct; }
 .data-panel .muted { font-size: 12px; }
+
+/* Profile */
+.profile-heading { display: flex; align-items: center; gap: 14px; padding: 24px 0 20px; }
+.profile-heading h1 { margin: 2px 0 3px; font-size: 26px; letter-spacing: -.045em; }
+.profile-heading .muted { margin: 0; font-size: 12px; }
+.profile-avatar { width: 56px; height: 56px; flex: none; border-radius: 20px; font-size: 21px; }
+.profile-details { display: grid; margin-top: 16px; }
+.profile-details > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.profile-details > div:last-child { border-bottom: 0; padding-bottom: 0; }
+.profile-details span { color: var(--muted-foreground); font-size: 12.5px; }
+.profile-details strong { font-size: 13.5px; }
+.profile-form { display: grid; gap: 14px; margin-top: 18px; }
+.profile-form .inline-field, .profile-form .sensor-actions { margin-top: 0; }
+.field-label { display: block; margin-bottom: 7px; color: var(--text-tertiary); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.profile-save { justify-content: center; width: 100%; min-height: 46px; border-radius: 14px; font-size: 13px; }
+.profile-links { display: grid; gap: 10px; }
+.profile-links a { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border: 1px solid var(--border); border-radius: 16px; background: var(--card); color: var(--foreground); font-size: 13px; font-weight: 600; text-decoration: none; }
+.profile-links a:hover { background: var(--surface-hover); }
+.profile-links a span { color: var(--muted-foreground); }
 .coach-reply.error { border: 1px solid var(--danger); }
 .coach-reply.error span { color: var(--danger); }
 
@@ -104,7 +123,7 @@ nav { display: flex; flex-direction: column; gap: 4px; }
 .sidebar.collapsed .theme-toggle { justify-content: center; padding: 0; }
 .theme-toggle-icon { position: relative; display: grid; flex: none; place-items: center; width: 19px; height: 19px; }
 .theme-toggle-icon > span { position: absolute; inset: 0; display: grid; place-items: center; }
-.user-chip { display: flex; align-items: center; gap: 9px; padding: 13px 8px 0; border-top: 1px solid var(--border); }
+.user-chip { display: flex; align-items: center; gap: 9px; padding: 13px 8px 0; border-top: 1px solid var(--border); color: var(--foreground); text-decoration: none; }
 .user-chip > div:nth-child(2) { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .user-chip strong { font-size: 12px; }
 .user-chip span { color: var(--text-tertiary); font-size: 10px; }
@@ -193,10 +212,10 @@ nav { display: flex; flex-direction: column; gap: 4px; }
 .bottom-nav { display: none; }
 
 /* Onboarding / profile */
-.onboarding-shell, .profile-shell { min-height: 100vh; display: grid; place-items: center; padding: 28px 16px; }
-.onboarding-card, .profile-card { width: min(100%, 680px); padding: 28px; border: 1px solid var(--border); border-radius: 30px; background: var(--card); box-shadow: var(--shadow-lg); }
+.onboarding-shell { min-height: 100vh; display: grid; place-items: center; padding: 28px 16px; }
+.onboarding-card { width: min(100%, 680px); padding: 28px; border: 1px solid var(--border); border-radius: 30px; background: var(--card); box-shadow: var(--shadow-lg); }
 .back-link { display: inline-block; color: var(--muted-foreground); font-size: 12px; text-decoration: none; margin-bottom: 42px; }
-.onboarding-card h1, .profile-card h1 { max-width: 520px; margin: 0; font-size: clamp(32px, 7vw, 50px); letter-spacing: -.07em; line-height: 1.02; }
+.onboarding-card h1 { max-width: 520px; margin: 0; font-size: clamp(32px, 7vw, 50px); letter-spacing: -.07em; line-height: 1.02; }
 .onboarding-progress { display: flex; gap: 5px; margin: 34px 0; }
 .onboarding-progress span { flex: 1; height: 4px; overflow: hidden; border-radius: 999px; background: var(--progress-track); color: transparent; font-size: 0; }
 .onboarding-progress .filled { background: var(--ink); }
@@ -225,21 +244,7 @@ nav { display: flex; flex-direction: column; gap: 4px; }
 .primary-button { background: var(--foreground); color: var(--background); }
 .quiet-button { background: var(--surface-hover); color: var(--muted-foreground); }
 .quiet-button:disabled { opacity: .4; }
-.profile-heading { display: flex; align-items: center; gap: 15px; margin-bottom: 38px; }
-.profile-avatar { width: 64px; height: 64px; font-size: 20px; }
-.profile-heading h1 { font-size: 35px; }
-.profile-section { margin-top: 15px; padding: 22px; border-radius: 23px; background: var(--surface-hover); }
-.profile-section h2 { margin: 0; font-size: 21px; letter-spacing: -.05em; }
-.profile-details { display: grid; grid-template-columns: 1fr 1fr; gap: 17px; margin-top: 24px; }
-.profile-details div { display: flex; flex-direction: column; gap: 5px; }
-.profile-details span { color: var(--muted-foreground); font-size: 11px; }
-.profile-details strong { font-size: 14px; }
 .soft-green { background: var(--tint-green); }
-.profile-progress { height: 8px; margin-top: 20px; overflow: hidden; border-radius: 99px; background: var(--ring-track); }
-.profile-progress i { display: block; height: 100%; border-radius: inherit; background: var(--ink); }
-.profile-links { display: flex; flex-direction: column; gap: 2px; margin-top: 16px; }
-.profile-links a { display: flex; justify-content: space-between; padding: 17px 4px; border-bottom: 1px solid var(--border); color: var(--ink); font-size: 13px; text-decoration: none; }
-.profile-links span { color: var(--muted-foreground); }
 .filter-tabs { display: flex; gap: 4px; padding: 4px; width: max-content; border-radius: 13px; background: var(--surface-hover); }
 .coach-card, .nutrition-hero { padding: 25px; border-radius: 25px; background: var(--tint-blue); }
 .coach-intro { display: flex; align-items: center; gap: 12px; }
@@ -380,6 +385,11 @@ nav { display: flex; flex-direction: column; gap: 4px; }
   .water-ring::after { width: 92px; height: 92px; }
   .timeline-row { grid-template-columns: 60px 1fr auto; gap: 10px; }
   .empty-state { padding: 40px 20px; }
+  .profile-heading { padding: 20px 0 16px; }
+  .profile-heading h1 { font-size: 22px; }
+  .profile-avatar { width: 50px; height: 50px; border-radius: 17px; font-size: 19px; }
+  .profile-form .inline-field input { min-height: 44px; font-size: 14px; }
+  .profile-links a { padding: 15px 16px; border-radius: 15px; font-size: 12.5px; }
   .sensor-panel { padding: 18px; border-radius: 20px; }
   .sensor-head p { font-size: 11px; }
   .sensor-actions { gap: 6px; }
