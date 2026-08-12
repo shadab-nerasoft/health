@@ -1,4 +1,3 @@
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Google_Sans, Google_Sans_Flex } from 'next/font/google'
 import { ThemeProvider } from '@/components/wellness/theme-provider'
@@ -65,7 +64,7 @@ export default function RootLayout({
       <body className="antialiased font-sans" suppressHydrationWarning>
         <ThemeProvider>
           {children}
-          {process.env.NODE_ENV === 'production' && <Analytics />}
+
         </ThemeProvider>
       </body>
     </html>

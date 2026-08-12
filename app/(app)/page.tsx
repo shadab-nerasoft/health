@@ -11,7 +11,7 @@ const fetcher = (url: string) => fetch(url).then((response) => response.json())
 
 function StepRing({ steps, stepPercent }: { steps: number; stepPercent: number }) {
   return (
-    <div className="step-ring" aria-label="84 percent of daily step goal">
+    <div className="step-ring" aria-label={`${stepPercent} percent of daily step goal`}>
       <div>
         <strong>{steps.toLocaleString()}</strong>
         <span>steps</span>
