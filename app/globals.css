@@ -170,8 +170,20 @@ nav { display: flex; flex-direction: column; gap: 4px; }
 .choice span { color: var(--text-tertiary); font-size: 11px; }
 .choice.selected { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
 .number-field { flex-direction: column; align-items: stretch; margin-top: 22px; color: var(--muted-foreground); font-size: 12px; }
-.number-field input { border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 25px; }
+.number-field input, .number-field select { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 25px; }
+.number-field select { appearance: none; font-size: 16px; }
 .onboarding-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
+.auth-card { max-width: 520px; }
+.auth-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 42px; color: var(--ink); font-size: 15px; letter-spacing: -.03em; }
+.auth-brand .brand-mark { width: 34px; height: 34px; }
+.auth-form { display: grid; gap: 13px; margin-top: 25px; }
+.auth-form .number-field { margin-top: 0; }
+.auth-form .primary-button { width: 100%; margin-top: 6px; }
+.auth-switch { margin: 22px 0 0; color: var(--muted-foreground); text-align: center; font-size: 12px; }
+.auth-switch a { color: var(--ink); font-weight: 700; }
+.form-error { margin: 5px 0 0; color: var(--danger); font-size: 12px; line-height: 1.5; }
+.button-link { display: inline-flex; align-items: center; justify-content: center; width: 100%; margin-top: 24px; color: var(--background); text-decoration: none; }
+.primary-button:disabled { cursor: wait; opacity: .55; }
 .primary-button, .quiet-button { min-height: 45px; padding: 0 17px; border: 0; border-radius: 15px; font-size: 12px; font-weight: 700; }
 .primary-button { background: var(--foreground); color: var(--background); }
 .quiet-button { background: var(--surface-hover); color: var(--muted-foreground); }
@@ -192,6 +204,18 @@ nav { display: flex; flex-direction: column; gap: 4px; }
 .profile-links a { display: flex; justify-content: space-between; padding: 17px 4px; border-bottom: 1px solid var(--border); color: var(--ink); font-size: 13px; text-decoration: none; }
 .profile-links span { color: var(--muted-foreground); }
 .filter-tabs { display: flex; gap: 4px; padding: 4px; width: max-content; border-radius: 13px; background: var(--surface-hover); }
+.coach-card, .nutrition-hero { padding: 25px; border-radius: 25px; background: var(--tint-blue); }
+.coach-intro { display: flex; align-items: center; gap: 12px; }
+.coach-intro p, .nutrition-hero p { margin: 5px 0 0; color: var(--muted-foreground); font-size: 13px; line-height: 1.5; }
+.coach-reply { margin-top: 24px; padding: 18px; border-radius: 18px; background: var(--card); }
+.coach-reply span { color: var(--text-tertiary); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.coach-reply p { margin: 8px 0 0; white-space: pre-wrap; font-size: 13px; line-height: 1.6; }
+.coach-form { display: grid; gap: 10px; margin-top: 22px; }
+.coach-form textarea { width: 100%; resize: vertical; border: 1px solid var(--border); border-radius: 15px; padding: 14px; outline: none; background: var(--card); color: var(--ink); font: inherit; font-size: 13px; }
+.coach-form .primary-button { justify-self: start; }
+.nutrition-hero h2 { margin: 0; font-size: 25px; letter-spacing: -.05em; }
+.plan-output { white-space: normal; }
+.plan-output pre { margin: 15px 0 0; white-space: pre-wrap; color: var(--ink); font: inherit; font-size: 13px; line-height: 1.65; }
 
 /* Filters / stats / timeline */
 .filter-tabs button { border: 0; border-radius: 10px; padding: 9px 15px; background: transparent; color: var(--text-tertiary); font-size: 12px; font-weight: 600; }

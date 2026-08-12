@@ -37,6 +37,8 @@ const overviewLinks: NavLinkDef[] = [
 
 const wellnessLinks: NavLinkDef[] = [
   { href: '/water', label: 'Water', icon: Drop },
+  { href: '/nutrition', label: 'Nutrition', icon: Lamp },
+  { href: '/coach', label: 'Coach', icon: User },
   { href: '/heart-rate', label: 'Heart rate', icon: Heart },
   { href: '/profile', label: 'Profile', icon: User },
 ]
