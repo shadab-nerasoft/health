@@ -1,19 +1,21 @@
 'use client'
 
+import useSWR from 'swr'
 import { useState } from 'react'
 import { Activity, ArrowRight2, Chart2, Drop, Flash, Lamp, TrendUp } from 'iconsax-react'
 import { Stagger, StaggerItem } from '@/components/wellness/motion'
 
 const week = [42, 68, 51, 84, 62, 76, 58]
 const activity = [18, 26, 31, 22, 38, 44, 28, 36, 29, 48, 39, 55, 46, 61, 52, 42, 63, 51, 68, 57, 72, 60, 48, 34]
+const fetcher = (url: string) => fetch(url).then((response) => response.json())
 
-function StepRing() {
+function StepRing({ steps, stepPercent }: { steps: number; stepPercent: number }) {
   return (
     <div className="step-ring" aria-label="84 percent of daily step goal">
       <div>
-        <strong>8,420</strong>
+        <strong>{steps.toLocaleString()}</strong>
         <span>steps</span>
-        <small>84% of goal</small>
+        <small>{stepPercent}% of goal</small>
       </div>
     </div>
   )
@@ -32,6 +34,14 @@ function MiniBars({ values, color = 'var(--accent-blue)' }: { values: number[]; 
 export default function DashboardPage() {
   const [metric, setMetric] = useState('Steps')
   const [dismissed, setDismissed] = useState(false)
+  const { data } = useSWR('/api/dashboard', fetcher)
+  const steps = data?.activity?.steps ?? 0
+  const calories = data?.activity?.calories_burned ?? 0
+  const distanceKm = ((data?.activity?.distance_meters ?? 0) / 1000).toFixed(1)
+  const activeMinutes = data?.activity?.active_minutes ?? 0
+  const waterMl = data?.hydrationMl ?? 0
+  const waterGoalMl = data?.profile?.water_goal_ml ?? 2000
+  const stepPercent = Math.min(100, Math.round((steps / 10000) * 100))
 
   return (
     <>
@@ -56,7 +66,7 @@ export default function DashboardPage() {
               View activity <ArrowRight2 size="16" color="var(--muted-foreground)" />
             </button>
           </div>
-          <StepRing />
+          <StepRing steps={steps} stepPercent={stepPercent} />
         </StaggerItem>
 
         <StaggerItem className="metrics-grid">
@@ -65,7 +75,7 @@ export default function DashboardPage() {
               <span>Steps</span>
               <Activity size="18" color="var(--accent-blue)" />
             </div>
-            <strong>8,420</strong>
+            <strong>{steps.toLocaleString()}</strong>
             <small>84% of daily goal</small>
             <MiniBars values={[30, 45, 42, 65, 50, 72, 64, 88]} />
           </article>
@@ -74,7 +84,7 @@ export default function DashboardPage() {
               <span>Calories</span>
               <Flash size="18" color="var(--accent-peach)" />
             </div>
-            <strong>426 <em>kcal</em></strong>
+            <strong>{calories} <em>kcal</em></strong>
             <small>Estimated burned</small>
             <MiniBars values={[42, 35, 52, 44, 68, 51, 60, 76]} color="var(--accent-peach)" />
           </article>
@@ -83,7 +93,7 @@ export default function DashboardPage() {
               <span>Distance</span>
               <TrendUp size="18" color="var(--accent-green)" />
             </div>
-            <strong>6.2 <em>km</em></strong>
+            <strong>{distanceKm} <em>km</em></strong>
             <small>Distance walked</small>
             <MiniBars values={[40, 55, 34, 62, 52, 76, 68, 80]} color="var(--accent-green)" />
           </article>
@@ -92,7 +102,7 @@ export default function DashboardPage() {
               <span>Active time</span>
               <Chart2 size="18" color="var(--accent-lavender)" />
             </div>
-            <strong>74 <em>min</em></strong>
+            <strong>{activeMinutes} <em>min</em></strong>
             <small>Active today</small>
             <MiniBars values={[32, 45, 39, 58, 63, 52, 72, 66]} color="var(--accent-lavender)" />
           </article>
@@ -204,7 +214,7 @@ export default function DashboardPage() {
             <div>
               <p className="card-kicker">Daily recommendation</p>
               <h2>Stay hydrated</h2>
-              <p className="muted">You&apos;ve logged 1.2L today. Target: 2.5L</p>
+              <p className="muted">You&apos;ve logged {(waterMl / 1000).toFixed(1)}L today. Target: {(waterGoalMl / 1000).toFixed(1)}L</p>
             </div>
             <button onClick={() => setDismissed(true)} className="dismiss">
               Dismiss
