@@ -1,30 +1,42 @@
 import { generateText } from 'ai'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { zstepsModel } from '@/lib/ai/groq'
 
-const requestSchema = z.object({ message: z.string().trim().min(1).max(1200) })
+const contextSchema = z
+  .object({
+    steps: z.number().int().min(0).max(500000).optional(),
+    stepGoal: z.number().int().min(0).max(500000).optional(),
+    waterMl: z.number().int().min(0).max(50000).optional(),
+    waterGoalMl: z.number().int().min(0).max(50000).optional(),
+    activeMinutes: z.number().int().min(0).max(1440).optional(),
+    weeklyAverageSteps: z.number().int().min(0).max(500000).optional(),
+  })
+  .optional()
+
+const requestSchema = z.object({
+  message: z.string().trim().min(1).max(1200),
+  context: contextSchema,
+})
 
 export async function POST(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return Response.json({ error: 'Authentication required' }, { status: 401 })
   const parsed = requestSchema.safeParse(await request.json().catch(() => ({})))
-  if (!parsed.success) return Response.json({ error: 'Enter a message to continue' }, { status: 400 })
+  if (!parsed.success) return Response.json({ error: 'Enter a message to continue.' }, { status: 400 })
 
-  const [{ data: profile }, { data: history }] = await Promise.all([
-    supabase.from('profiles').select('first_name, current_weight_kg, target_weight_kg, activity_level, dietary_preferences, allergies, water_goal_ml, sleep_goal_hours').eq('id', user.id).single(),
-    supabase.from('coach_messages').select('role, content').eq('user_id', user.id).order('created_at', { ascending: false }).limit(8),
-  ])
+  if (!process.env.GROQ_API_KEY) {
+    return Response.json({ error: 'The coach is not configured yet. Add a GROQ_API_KEY to enable it.' }, { status: 503 })
+  }
 
-  await supabase.from('coach_messages').insert({ user_id: user.id, role: 'user', content: parsed.data.message })
-  const result = await generateText({
-    model: zstepsModel,
-    system: 'You are the ZSTEPS wellness coach. Be warm, concise, practical, and non-judgmental. Support sustainable weight loss without diagnosing, prescribing, or making extreme calorie recommendations. If symptoms, eating-disorder concerns, pregnancy, or medical conditions arise, recommend speaking with a qualified clinician. Use the user profile only to personalize general wellness suggestions.',
-    prompt: `User profile: ${JSON.stringify(profile)}\nRecent conversation: ${JSON.stringify((history ?? []).reverse())}\nUser message: ${parsed.data.message}`,
-    temperature: 0.5,
-  })
-  const { error } = await supabase.from('coach_messages').insert({ user_id: user.id, role: 'assistant', content: result.text })
-  if (error) return Response.json({ error: 'Could not save coach response' }, { status: 500 })
-  return Response.json({ message: result.text })
+  try {
+    const result = await generateText({
+      model: zstepsModel,
+      system:
+        'You are the ZSTEPS wellness coach. Be warm, concise, practical, and non-judgmental. Support sustainable habits without diagnosing, prescribing, or making extreme calorie recommendations. If symptoms, eating-disorder concerns, pregnancy, or medical conditions arise, recommend speaking with a qualified clinician. Base suggestions on the supplied activity numbers, which come from a phone motion sensor and are approximate.',
+      prompt: `Today's tracked activity: ${JSON.stringify(parsed.data.context ?? {})}\nUser message: ${parsed.data.message}`,
+      temperature: 0.5,
+    })
+
+    return Response.json({ message: result.text })
+  } catch {
+    return Response.json({ error: 'The coach could not respond right now. Please try again.' }, { status: 502 })
+  }
 }

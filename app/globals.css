@@ -40,8 +40,43 @@ body { margin: 0; background: var(--background); color: var(--foreground); font-
 h1, h2, .brand, .step-ring strong { font-family: var(--font-display), var(--font-sans), 'Google Sans', Arial, sans-serif; }
 button { font: inherit; color: inherit; cursor: pointer; }
 button:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 3px; }
-.motion-status { min-height: 20px; margin-top: 18px; color: var(--muted-foreground); font-size: 11px; line-height: 1.4; }
-.motion-enable { padding: 7px 10px; border: 1px solid var(--border-strong); border-radius: 9px; background: var(--card); color: var(--foreground); font-size: 11px; font-weight: 700; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* Sensor + data controls */
+.sensor-panel { padding: 22px; border: 1px solid var(--border); border-radius: 24px; background: var(--card); box-shadow: var(--shadow-md); }
+.sensor-head { display: flex; align-items: flex-start; gap: 12px; }
+.sensor-head > div { flex: 1; min-width: 0; }
+.sensor-head strong { display: block; font-size: 14px; letter-spacing: -.02em; }
+.sensor-head p { margin: 4px 0 0; color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
+.sensor-dot { flex: none; width: 9px; height: 9px; margin-top: 5px; border-radius: 50%; background: var(--muted-foreground); }
+.sensor-dot.live { background: var(--success); box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 22%, transparent); }
+.sensor-dot.warn { background: var(--accent-peach); }
+.sensor-session { flex: none; color: var(--text-tertiary); font-size: 13px; font-weight: 700; text-align: right; }
+.sensor-session em { display: block; font-style: normal; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+.sensor-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.chip-button { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 13px; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--card); color: var(--foreground); font-size: 12px; font-weight: 600; }
+.chip-button.primary { border-color: transparent; background: var(--foreground); color: var(--background); }
+.chip-button.danger { border-color: var(--danger); color: var(--danger); }
+.chip-button:disabled { opacity: .45; cursor: not-allowed; }
+.sensor-manual, .inline-field { margin-top: 16px; }
+.sensor-manual label, .inline-field label { display: block; margin-bottom: 7px; color: var(--text-tertiary); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.sensor-manual > div, .inline-field > div { display: flex; gap: 8px; }
+.sensor-manual input, .inline-field input, .goal-input input { min-width: 0; flex: 1; min-height: 38px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: 12px; outline: 0; background: var(--background); color: var(--foreground); font: inherit; font-size: 13px; }
+.sensor-manual input:focus-visible, .inline-field input:focus-visible, .goal-input input:focus-visible { border-color: var(--accent-blue); }
+.sensor-note { margin: 16px 0 0; color: var(--text-tertiary); font-size: 11px; line-height: 1.6; }
+.sensor-note code { padding: 1px 5px; border-radius: 5px; background: var(--surface-hover); font-size: 10px; }
+.empty-note { margin-top: 18px; font-size: 12px; }
+.icon-ghost { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 9px; background: transparent; }
+.icon-ghost:hover { background: var(--surface-hover); }
+.goal-row.editable { grid-template-columns: minmax(0, 1fr) 104px 44px; grid-template-areas: 'info input pct' 'bar bar bar'; row-gap: 12px; }
+.goal-row.editable > div:first-child { grid-area: info; }
+.goal-row.editable .goal-input { grid-area: input; display: flex; align-items: center; gap: 6px; }
+.goal-row.editable .goal-input em { font-style: normal; color: var(--text-tertiary); font-size: 10px; }
+.goal-row.editable .progress-track { grid-area: bar; }
+.goal-row.editable b { grid-area: pct; }
+.data-panel .muted { font-size: 12px; }
+.coach-reply.error { border: 1px solid var(--danger); }
+.coach-reply.error span { color: var(--danger); }
 
 /* Shell / sidebar / navigation */
 .wellness-app { min-height: 100vh; display: flex; }
@@ -86,7 +121,7 @@ nav { display: flex; flex-direction: column; gap: 4px; }
 .eyebrow, .card-kicker { margin: 0 0 8px; color: var(--text-tertiary); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
 .page-heading h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.06em; line-height: 1.05; }
 .subheading, .muted { margin: 9px 0 0; color: var(--muted-foreground); font-size: 14px; line-height: 1.55; }
-.date-button, .more-button { display: flex; align-items: center; gap: 7px; padding: 10px 13px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); color: var(--muted-foreground); font-size: 12px; }
+.date-button, .more-button { display: inline-flex; align-items: center; gap: 7px; width: max-content; padding: 10px 13px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); color: var(--muted-foreground); font-size: 12px; text-decoration: none; }
 
 /* Dashboard grid / hero / step ring */
 .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(300px, .9fr); gap: 18px; }
@@ -280,13 +315,17 @@ nav { display: flex; flex-direction: column; gap: 4px; }
   .topbar { justify-content: space-between; }
   .mobile-menu, .mobile-brand { display: flex; }
   .mobile-brand { font-size: 17px; }
-  .page-heading { align-items: flex-start; padding: 32px 0 24px; }
+  .page-heading { flex-direction: column; align-items: stretch; gap: 16px; padding: 32px 0 24px; }
   .page-heading h1 { font-size: 29px; max-width: 300px; }
+  .filter-tabs { width: 100%; justify-content: space-between; }
+  .filter-tabs button { flex: 1; padding: 9px 6px; }
   .date-button { display: none; }
   .dashboard-grid { display: flex; flex-direction: column; gap: 14px; }
-  .hero-card { min-height: 225px; padding: 23px; border-radius: 25px; }
-  .hero-card h2 { font-size: 23px; max-width: 150px; }
-  .hero-card .muted { max-width: 185px; font-size: 12px; }
+  .hero-card { flex-direction: column; align-items: stretch; min-height: 0; padding: 23px; border-radius: 25px; }
+  .hero-card h2 { font-size: 23px; max-width: none; }
+  .hero-card .muted { max-width: none; font-size: 12px; }
+  .hero-card .step-ring { align-self: center; margin-top: 22px; }
+  .soft-button { margin-top: 16px; }
   .step-ring { width: 132px; height: 132px; }
   .step-ring:after { width: 104px; height: 104px; }
   .step-ring strong { font-size: 21px; }
@@ -297,6 +336,7 @@ nav { display: flex; flex-direction: column; gap: 4px; }
   .panel { padding: 20px 17px; border-radius: 22px; }
   .activity-panel { min-height: 260px; }
   .panel-heading { display: block; }
+  .panel-heading .more-button { margin-top: 14px; }
   .segmented { margin-top: 15px; width: max-content; }
   .segmented button { padding: 8px 11px; }
   .weekly-panel .mini-bars { height: 90px; gap: 9px; }
@@ -317,6 +357,18 @@ nav { display: flex; flex-direction: column; gap: 4px; }
   .water-ring::after { width: 92px; height: 92px; }
   .timeline-row { grid-template-columns: 60px 1fr auto; gap: 10px; }
   .empty-state { padding: 40px 20px; }
+  .sensor-panel { padding: 18px; border-radius: 20px; }
+  .sensor-head p { font-size: 11px; }
+  .sensor-actions { gap: 6px; }
+  .chip-button { min-height: 36px; padding: 0 10px; font-size: 11px; }
+  .goal-row.editable { grid-template-columns: minmax(0, 1fr) 96px 34px; }
+  .goal-row.editable .goal-input { gap: 4px; }
+  .goal-row.editable .goal-input input { padding: 0 8px; font-size: 12px; }
+  .coach-card, .nutrition-hero { padding: 20px; border-radius: 22px; }
+  .nutrition-hero h2 { font-size: 21px; }
+  .quick-actions { gap: 7px; }
+  .quick-actions button { padding: 10px 12px; font-size: 11px; }
+  .recommendation .dismiss { display: inline-flex; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }

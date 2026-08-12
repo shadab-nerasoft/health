@@ -1,38 +1,44 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-type MotionStatus = 'starting' | 'active' | 'permission-required' | 'denied' | 'unsupported'
+export type MotionStatus = 'idle' | 'starting' | 'active' | 'paused' | 'permission-required' | 'denied' | 'unsupported'
 
-const STORAGE_KEY = 'zsteps-motion-steps'
-const STEP_COOLDOWN_MS = 350
-const MIN_STEP_INTERVAL_MS = 280
-const PEAK_THRESHOLD = 1.18
+const STEP_COOLDOWN_MS = 300
+const PEAK_THRESHOLD = 1.15
+const VALLEY_THRESHOLD = 1.02
+const SMOOTHING = 0.28
 
-function readStoredSteps() {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    const parsed = raw ? JSON.parse(raw) : null
-    if (parsed?.date === new Date().toISOString().slice(0, 10)) return Number(parsed.steps) || 0
-  } catch {
-    // Storage can be unavailable in private browsing.
-  }
-  return 0
+type Options = {
+  paused?: boolean
+  onStep: (count: number) => void
 }
 
-export function useMotionPedometer() {
-  const [steps, setSteps] = useState(0)
-  const [status, setStatus] = useState<MotionStatus>('starting')
+/**
+ * Counts walking steps from DeviceMotionEvent accelerometer peaks.
+ * Browser sensors only run while this page is open and in the foreground.
+ */
+export function useMotionPedometer({ paused = false, onStep }: Options) {
+  const [status, setStatus] = useState<MotionStatus>('idle')
+  const [sessionSteps, setSessionSteps] = useState(0)
+  const [attempt, setAttempt] = useState(0)
+  const onStepRef = useRef(onStep)
+  const pausedRef = useRef(paused)
+  const grantedRef = useRef(false)
 
-  const persist = useCallback((next: number) => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: new Date().toISOString().slice(0, 10), steps: next }))
-    } catch {
-      // Continue counting for the current session if storage is unavailable.
-    }
-  }, [])
+  useEffect(() => {
+    onStepRef.current = onStep
+  }, [onStep])
 
-  const startListening = useCallback(async (userInitiated = false) => {
+  useEffect(() => {
+    pausedRef.current = paused
+    setStatus((current) => {
+      if (paused) return current === 'active' ? 'paused' : current
+      return current === 'paused' ? 'active' : current
+    })
+  }, [paused])
+
+  const ensurePermission = useCallback(async (userInitiated: boolean) => {
     if (typeof window === 'undefined' || !('DeviceMotionEvent' in window)) {
       setStatus('unsupported')
       return false
@@ -41,14 +47,15 @@ export function useMotionPedometer() {
     const MotionEvent = window.DeviceMotionEvent as typeof DeviceMotionEvent & {
       requestPermission?: () => Promise<'granted' | 'denied'>
     }
-    if (typeof MotionEvent.requestPermission === 'function') {
+
+    if (typeof MotionEvent.requestPermission === 'function' && !grantedRef.current) {
       if (!userInitiated) {
         setStatus('permission-required')
         return false
       }
       try {
-        const permission = await MotionEvent.requestPermission()
-        if (permission !== 'granted') {
+        const result = await MotionEvent.requestPermission()
+        if (result !== 'granted') {
           setStatus('denied')
           return false
         }
@@ -56,58 +63,73 @@ export function useMotionPedometer() {
         setStatus('denied')
         return false
       }
+      grantedRef.current = true
     }
 
-    setStatus('active')
     return true
   }, [])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    setSteps(readStoredSteps())
-
-    let lastPeak = 0
-    let previousMagnitude = 1
+    let detached = false
     let listening = false
+    let smoothed = 1
+    let rising = false
+    let lastStepAt = 0
+    let sawMotionData = false
 
     const handleMotion = (event: DeviceMotionEvent) => {
       const acceleration = event.accelerationIncludingGravity
-      if (!acceleration) return
-      const magnitude = Math.sqrt(
-        (acceleration.x ?? 0) ** 2 + (acceleration.y ?? 0) ** 2 + (acceleration.z ?? 0) ** 2,
-      ) / 9.81
-      const now = Date.now()
-      const rising = magnitude > previousMagnitude
-      const peak = magnitude > PEAK_THRESHOLD && rising && now - lastPeak > STEP_COOLDOWN_MS
-      if (peak && now - lastPeak > MIN_STEP_INTERVAL_MS) {
-        lastPeak = now
-        setSteps((current) => {
-          const next = current + 1
-          persist(next)
-          return next
-        })
+      if (!acceleration || acceleration.x === null) return
+      sawMotionData = true
+      if (pausedRef.current) return
+
+      const magnitude =
+        Math.sqrt((acceleration.x ?? 0) ** 2 + (acceleration.y ?? 0) ** 2 + (acceleration.z ?? 0) ** 2) / 9.81
+      smoothed = smoothed + SMOOTHING * (magnitude - smoothed)
+
+      const now = event.timeStamp || Date.now()
+      if (!rising && smoothed > PEAK_THRESHOLD) {
+        rising = true
+        if (now - lastStepAt > STEP_COOLDOWN_MS) {
+          lastStepAt = now
+          setSessionSteps((count) => count + 1)
+          onStepRef.current(1)
+        }
+      } else if (rising && smoothed < VALLEY_THRESHOLD) {
+        rising = false
       }
-      previousMagnitude = magnitude
     }
 
-    const attach = () => {
-      if (listening) return
+    const attach = async () => {
+      const allowed = await ensurePermission(false)
+      if (!allowed || detached) return
+      setStatus(pausedRef.current ? 'paused' : 'active')
       window.addEventListener('devicemotion', handleMotion)
       listening = true
-    }
-    const detach = () => {
-      window.removeEventListener('devicemotion', handleMotion)
-      listening = false
+      // Desktop browsers expose the API but never emit usable readings.
+      window.setTimeout(() => {
+        if (!detached && !sawMotionData) setStatus('unsupported')
+      }, 3000)
     }
 
-    const begin = async () => {
-      const started = await startListening()
-      if (started) attach()
+    setStatus('starting')
+    void attach()
+
+    return () => {
+      detached = true
+      if (listening) window.removeEventListener('devicemotion', handleMotion)
     }
-    void begin()
+  }, [ensurePermission, attempt])
 
-    return detach
-  }, [persist, startListening])
+  const requestAccess = useCallback(async () => {
+    const allowed = await ensurePermission(true)
+    if (allowed) {
+      setStatus(pausedRef.current ? 'paused' : 'active')
+      setAttempt((value) => value + 1)
+    }
+    return allowed
+  }, [ensurePermission])
 
-  return { steps, status, requestPermission: startListening }
+  return { status, sessionSteps, requestAccess }
 }

@@ -1,22 +1,25 @@
 'use client'
 
-import useSWR from 'swr'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Activity, ArrowRight2, Chart2, Drop, Flash, Lamp, TrendUp } from 'iconsax-react'
 import { Stagger, StaggerItem } from '@/components/wellness/motion'
-import { useMotionPedometer } from '@/hooks/use-motion-pedometer'
-
-const week = [42, 68, 51, 84, 62, 76, 58]
-const activity = [18, 26, 31, 22, 38, 44, 28, 36, 29, 48, 39, 55, 46, 61, 52, 42, 63, 51, 68, 57, 72, 60, 48, 34]
-const fetcher = (url: string) => fetch(url).then((response) => response.json())
+import { SensorPanel } from '@/components/wellness/sensor-panel'
+import { useTracking } from '@/components/wellness/tracking-provider'
+import { percent } from '@/lib/wellness/store'
 
 function StepRing({ steps, stepPercent }: { steps: number; stepPercent: number }) {
+  const capped = Math.min(stepPercent, 100)
   return (
-    <div className="step-ring" aria-label={`${stepPercent} percent of daily step goal`}>
+    <div
+      className="step-ring"
+      style={{ background: `conic-gradient(var(--foreground) 0 ${capped}%, var(--ring-track) ${capped}% 100%)` }}
+      aria-label={`${stepPercent} percent of daily step goal`}
+    >
       <div>
         <strong suppressHydrationWarning>{steps.toLocaleString()}</strong>
         <span>steps</span>
-        <small>{stepPercent}% of goal</small>
+        <small suppressHydrationWarning>{stepPercent}% of goal</small>
       </div>
     </div>
   )
@@ -26,65 +29,74 @@ function MiniBars({ values, color = 'var(--accent-blue)' }: { values: number[]; 
   return (
     <div className="mini-bars" aria-hidden="true">
       {values.map((value, index) => (
-        <i key={index} style={{ height: `${value}%`, background: color }} />
+        <i key={index} style={{ height: `${Math.max(4, value)}%`, background: color }} />
       ))}
     </div>
   )
 }
 
 export default function DashboardPage() {
-  const [metric, setMetric] = useState('Steps')
-  const [dismissed, setDismissed] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const { steps: motionSteps, status: motionStatus, requestPermission } = useMotionPedometer()
-  const { data } = useSWR(mounted ? '/api/dashboard' : null, fetcher)
+  const { ready, today, derived, goals, history, todayWaterEntries } = useTracking()
+  const [dateLabel, setDateLabel] = useState('')
 
   useEffect(() => {
-    setMounted(true)
+    setDateLabel(new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }))
   }, [])
 
-  // Keep the server render and the first client render identical. Live Supabase
-  // values are applied only after hydration has completed.
-  const hasLiveData = mounted && Boolean(data?.activity)
-  const steps = motionSteps > 0 ? motionSteps : hasLiveData ? (data.activity.steps ?? 0) : 8420
-  const calories = hasLiveData ? (data.activity.calories_burned ?? 0) : 426
-  const distanceKm = hasLiveData ? ((data.activity.distance_meters ?? 0) / 1000).toFixed(1) : '6.2'
-  const activeMinutes = hasLiveData ? (data.activity.active_minutes ?? 0) : 74
-  const waterMl = hasLiveData ? (data.hydrationMl ?? 0) : 1200
-  const waterGoalMl = hasLiveData ? (data.profile?.water_goal_ml ?? 2000) : 2500
-  const stepPercent = hasLiveData ? Math.min(100, Math.round((steps / 10000) * 100)) : 84
+  const week = history(7)
+  const maxWeekSteps = Math.max(goals.steps, ...week.map((day) => day.steps))
+  const weekBars = week.map((day) => Math.round((day.steps / maxWeekSteps) * 100))
+  const weekAverage = Math.round(week.reduce((total, day) => total + day.steps, 0) / 7)
+  const stepPercent = percent(today.steps, goals.steps)
+  const distanceKm = derived.distanceMeters / 1000
+  const hasSteps = ready && today.steps > 0
+
+  const goalRows = [
+    ['Steps', today.steps.toLocaleString(), goals.steps.toLocaleString(), percent(today.steps, goals.steps)],
+    ['Distance', `${distanceKm.toFixed(1)} km`, `${goals.distanceKm} km`, percent(distanceKm, goals.distanceKm)],
+    [
+      'Active minutes',
+      `${derived.activeMinutes} min`,
+      `${goals.activeMinutes} min`,
+      percent(derived.activeMinutes, goals.activeMinutes),
+    ],
+    ['Water', `${(today.waterMl / 1000).toFixed(1)} L`, `${(goals.waterMl / 1000).toFixed(1)} L`, percent(today.waterMl, goals.waterMl)],
+  ] as const
 
   return (
     <>
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Tuesday, October 24, 2024</p>
-          <h1>Good morning, Shadab</h1>
-          <p className="subheading">Here&apos;s your health at a glance.</p>
+          <p className="eyebrow" suppressHydrationWarning>
+            {dateLabel || 'Today'}
+          </p>
+          <h1>Your day so far</h1>
+          <p className="subheading">Everything here is measured on this device, in this browser.</p>
         </div>
-        <button className="date-button">
-          Today <ArrowRight2 size="16" color="var(--muted-foreground)" />
-        </button>
+        <Link href="/activity" className="date-button">
+          Activity <ArrowRight2 size="16" color="var(--muted-foreground)" />
+        </Link>
       </div>
 
       <Stagger className="dashboard-grid">
         <StaggerItem className="hero-card">
           <div>
             <p className="card-kicker">Today&apos;s movement</p>
-            <h2>Keep your rhythm</h2>
-            <p className="muted">You&apos;re building a great habit. A little more movement will get you to your goal.</p>
-            <div className="motion-status" role="status">
-              {motionStatus === 'active' && <span>Motion tracking active</span>}
-              {motionStatus === 'starting' && <span>Starting motion tracking…</span>}
-              {motionStatus === 'unsupported' && <span>Motion sensors unavailable; local steps still work.</span>}
-              {motionStatus === 'denied' && <button className="motion-enable" onClick={() => void requestPermission(true)}>Enable motion access</button>}
-              {motionStatus === 'permission-required' && <button className="motion-enable" onClick={() => void requestPermission(true)}>Enable motion access</button>}
-            </div>
-            <button className="soft-button">
+            <h2>{hasSteps ? 'Keep your rhythm' : 'Start moving'}</h2>
+            <p className="muted">
+              {hasSteps
+                ? `You're ${stepPercent}% of the way to your ${goals.steps.toLocaleString()} step goal.`
+                : 'No steps recorded yet today. Walk with this tab open, or add steps manually below.'}
+            </p>
+            <Link href="/activity" className="soft-button">
               View activity <ArrowRight2 size="16" color="var(--muted-foreground)" />
-            </button>
+            </Link>
           </div>
-          <StepRing steps={steps} stepPercent={stepPercent} />
+          <StepRing steps={today.steps} stepPercent={stepPercent} />
+        </StaggerItem>
+
+        <StaggerItem style={{ gridColumn: '1 / -1' }}>
+          <SensorPanel />
         </StaggerItem>
 
         <StaggerItem className="metrics-grid">
@@ -93,92 +105,70 @@ export default function DashboardPage() {
               <span>Steps</span>
               <Activity size="18" color="var(--accent-blue)" />
             </div>
-            <strong suppressHydrationWarning>{steps.toLocaleString()}</strong>
-            <small>{stepPercent}% of daily goal</small>
-            <MiniBars values={[30, 45, 42, 65, 50, 72, 64, 88]} />
+            <strong suppressHydrationWarning>{today.steps.toLocaleString()}</strong>
+            <small suppressHydrationWarning>{stepPercent}% of daily goal</small>
+            <MiniBars values={weekBars} />
           </article>
           <article className="metric-card peach">
             <div className="metric-top">
               <span>Calories</span>
               <Flash size="18" color="var(--accent-peach)" />
             </div>
-            <strong suppressHydrationWarning>{calories} <em>kcal</em></strong>
-            <small>Estimated burned</small>
-            <MiniBars values={[42, 35, 52, 44, 68, 51, 60, 76]} color="var(--accent-peach)" />
+            <strong suppressHydrationWarning>
+              {derived.calories} <em>kcal</em>
+            </strong>
+            <small>Estimated from steps</small>
+            <MiniBars values={weekBars} color="var(--accent-peach)" />
           </article>
           <article className="metric-card green">
             <div className="metric-top">
               <span>Distance</span>
               <TrendUp size="18" color="var(--accent-green)" />
             </div>
-            <strong suppressHydrationWarning>{distanceKm} <em>km</em></strong>
-            <small>Distance walked</small>
-            <MiniBars values={[40, 55, 34, 62, 52, 76, 68, 80]} color="var(--accent-green)" />
+            <strong suppressHydrationWarning>
+              {distanceKm.toFixed(1)} <em>km</em>
+            </strong>
+            <small>0.76 m average stride</small>
+            <MiniBars values={weekBars} color="var(--accent-green)" />
           </article>
           <article className="metric-card lavender">
             <div className="metric-top">
               <span>Active time</span>
               <Chart2 size="18" color="var(--accent-lavender)" />
             </div>
-            <strong suppressHydrationWarning>{activeMinutes} <em>min</em></strong>
-            <small>Active today</small>
-            <MiniBars values={[32, 45, 39, 58, 63, 52, 72, 66]} color="var(--accent-lavender)" />
+            <strong suppressHydrationWarning>
+              {derived.activeMinutes} <em>min</em>
+            </strong>
+            <small>Estimated moving time</small>
+            <MiniBars values={weekBars} color="var(--accent-lavender)" />
           </article>
-        </StaggerItem>
-
-        <StaggerItem className="panel activity-panel">
-          <div className="panel-heading">
-            <div>
-              <p className="card-kicker">Live overview</p>
-              <h2>Today&apos;s activity</h2>
-            </div>
-            <div className="segmented">
-              {['Steps', 'Calories', 'Active'].map((item) => (
-                <button key={item} onClick={() => setMetric(item)} className={metric === item ? 'selected' : ''}>
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="activity-chart">
-            <div className="chart-bars">
-              {activity.map((value, index) => (
-                <i key={index} style={{ height: `${value}%` }} />
-              ))}
-            </div>
-            <div className="chart-labels">
-              <span>12 AM</span>
-              <span>6 AM</span>
-              <span>12 PM</span>
-              <span>6 PM</span>
-              <span>12 AM</span>
-            </div>
-          </div>
         </StaggerItem>
 
         <StaggerItem className="panel weekly-panel">
           <div className="panel-heading">
             <div>
-              <p className="card-kicker">This week</p>
-              <h2>Activity</h2>
+              <p className="card-kicker">Last 7 days</p>
+              <h2>Steps</h2>
             </div>
-            <button className="more-button">
-              7 days <ArrowRight2 size="15" />
-            </button>
+            <Link href="/progress" className="more-button">
+              Trends <ArrowRight2 size="15" />
+            </Link>
           </div>
-          <MiniBars values={week} color="var(--ink)" />
+          <MiniBars values={weekBars} color="var(--ink)" />
           <div className="week-labels">
-            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
-              <span key={i}>{day}</span>
+            {week.map((day) => (
+              <span key={day.date} suppressHydrationWarning>
+                {new Date(`${day.date}T00:00:00`).toLocaleDateString([], { weekday: 'narrow' })}
+              </span>
             ))}
           </div>
           <div className="weekly-summary">
             <div>
-              <strong>8,742</strong>
+              <strong suppressHydrationWarning>{weekAverage.toLocaleString()}</strong>
               <span>average steps/day</span>
             </div>
-            <b>
-              +12.4% <small>vs last week</small>
+            <b suppressHydrationWarning>
+              {week.filter((day) => day.steps > 0).length} <small>days with data</small>
             </b>
           </div>
         </StaggerItem>
@@ -189,26 +179,22 @@ export default function DashboardPage() {
               <p className="card-kicker">Keep going</p>
               <h2>Today&apos;s goals</h2>
             </div>
-            <button className="more-button">
+            <Link href="/goals" className="more-button">
               Edit <ArrowRight2 size="15" />
-            </button>
+            </Link>
           </div>
-          {[
-            ['Steps', '8,420', '10,000', 84],
-            ['Distance', '6.2 km', '7.5 km', 83],
-            ['Active minutes', '74 min', '60 min', 100],
-          ].map(([name, current, target, percent]) => (
-            <div className="goal-row" key={String(name)}>
+          {goalRows.map(([name, current, target, value]) => (
+            <div className="goal-row" key={name}>
               <div>
                 <span>{name}</span>
-                <strong>
+                <strong suppressHydrationWarning>
                   {current} <small>/ {target}</small>
                 </strong>
               </div>
               <div className="progress-track">
-                <i style={{ width: `${percent}%` }} />
+                <i style={{ width: `${Math.min(value, 100)}%` }} />
               </div>
-              <b>{percent}%</b>
+              <b suppressHydrationWarning>{value}%</b>
             </div>
           ))}
         </StaggerItem>
@@ -219,27 +205,34 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="card-kicker">A little insight</p>
-            <h2>Your activity is highest between 6–8 PM.</h2>
-            <p className="muted">That evening window is becoming your strongest movement habit.</p>
+            <h2 suppressHydrationWarning>
+              {hasSteps
+                ? `You've covered ${distanceKm.toFixed(1)} km on foot today.`
+                : 'Your history builds as you use the app.'}
+            </h2>
+            <p className="muted">
+              Estimates come from your own step count, so they get more useful the longer you keep tracking.
+            </p>
           </div>
         </StaggerItem>
 
-        {!dismissed && (
-          <StaggerItem className="recommendation">
-            <div className="recommendation-icon">
-              <Drop size="20" color="var(--accent-blue)" />
-            </div>
-            <div>
-              <p className="card-kicker">Daily recommendation</p>
-              <h2>Stay hydrated</h2>
-              <p className="muted">You&apos;ve logged {(waterMl / 1000).toFixed(1)}L today. Target: {(waterGoalMl / 1000).toFixed(1)}L</p>
-            </div>
-            <button onClick={() => setDismissed(true)} className="dismiss">
-              Dismiss
-            </button>
-            <ArrowRight2 size="18" />
-          </StaggerItem>
-        )}
+        <StaggerItem className="recommendation">
+          <div className="recommendation-icon">
+            <Drop size="20" color="var(--accent-blue)" />
+          </div>
+          <div>
+            <p className="card-kicker">Hydration</p>
+            <h2>Stay hydrated</h2>
+            <p className="muted" suppressHydrationWarning>
+              {(today.waterMl / 1000).toFixed(1)}L logged of {(goals.waterMl / 1000).toFixed(1)}L
+              {todayWaterEntries.length > 0 ? ` across ${todayWaterEntries.length} entries.` : ' today.'}
+            </p>
+          </div>
+          <Link href="/water" className="dismiss">
+            Log water
+          </Link>
+          <ArrowRight2 size="18" />
+        </StaggerItem>
       </Stagger>
     </>
   )

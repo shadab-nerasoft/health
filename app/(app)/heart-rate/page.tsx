@@ -19,14 +19,14 @@ export default function HeartRatePage() {
           <div className="empty-state-icon">
             <Watch size="26" color="var(--danger)" variant="Bold" />
           </div>
-          <h2>No device connected yet</h2>
+          <h2>No heart-rate source available</h2>
           <p>
-            Pair a wearable or heart-rate monitor to start tracking live bpm, resting heart rate, and activity zones
-            right here on this page.
+            Web browsers cannot read heart rate from a phone alone. A Bluetooth chest strap or watch that supports the
+            Web Bluetooth heart-rate profile would be needed to fill this page with live bpm and zones.
           </p>
-          <button className="soft-button">
-            <Heart size="16" color="var(--danger)" /> Connect a device
-          </button>
+          <p className="sensor-note" style={{ maxWidth: 380 }}>
+            <Heart size="14" color="var(--danger)" /> Steps, water, and weight continue to track without any device.
+          </p>
         </StaggerItem>
 
         <StaggerItem className="panel" style={{ gridColumn: '1 / -1' }}>
