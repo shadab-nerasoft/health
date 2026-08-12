@@ -13,7 +13,7 @@ function StepRing({ steps, stepPercent }: { steps: number; stepPercent: number }
   return (
     <div className="step-ring" aria-label={`${stepPercent} percent of daily step goal`}>
       <div>
-        <strong>{steps.toLocaleString()}</strong>
+        <strong suppressHydrationWarning>{steps.toLocaleString()}</strong>
         <span>steps</span>
         <small>{stepPercent}% of goal</small>
       </div>
@@ -84,7 +84,7 @@ export default function DashboardPage() {
               <span>Steps</span>
               <Activity size="18" color="var(--accent-blue)" />
             </div>
-            <strong>{steps.toLocaleString()}</strong>
+            <strong suppressHydrationWarning>{steps.toLocaleString()}</strong>
             <small>{stepPercent}% of daily goal</small>
             <MiniBars values={[30, 45, 42, 65, 50, 72, 64, 88]} />
           </article>
@@ -93,7 +93,7 @@ export default function DashboardPage() {
               <span>Calories</span>
               <Flash size="18" color="var(--accent-peach)" />
             </div>
-            <strong>{calories} <em>kcal</em></strong>
+            <strong suppressHydrationWarning>{calories} <em>kcal</em></strong>
             <small>Estimated burned</small>
             <MiniBars values={[42, 35, 52, 44, 68, 51, 60, 76]} color="var(--accent-peach)" />
           </article>
@@ -102,7 +102,7 @@ export default function DashboardPage() {
               <span>Distance</span>
               <TrendUp size="18" color="var(--accent-green)" />
             </div>
-            <strong>{distanceKm} <em>km</em></strong>
+            <strong suppressHydrationWarning>{distanceKm} <em>km</em></strong>
             <small>Distance walked</small>
             <MiniBars values={[40, 55, 34, 62, 52, 76, 68, 80]} color="var(--accent-green)" />
           </article>
@@ -111,7 +111,7 @@ export default function DashboardPage() {
               <span>Active time</span>
               <Chart2 size="18" color="var(--accent-lavender)" />
             </div>
-            <strong>{activeMinutes} <em>min</em></strong>
+            <strong suppressHydrationWarning>{activeMinutes} <em>min</em></strong>
             <small>Active today</small>
             <MiniBars values={[32, 45, 39, 58, 63, 52, 72, 66]} color="var(--accent-lavender)" />
           </article>
