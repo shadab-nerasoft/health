@@ -4,6 +4,7 @@ import useSWR from 'swr'
 import { useEffect, useState } from 'react'
 import { Activity, ArrowRight2, Chart2, Drop, Flash, Lamp, TrendUp } from 'iconsax-react'
 import { Stagger, StaggerItem } from '@/components/wellness/motion'
+import { useMotionPedometer } from '@/hooks/use-motion-pedometer'
 
 const week = [42, 68, 51, 84, 62, 76, 58]
 const activity = [18, 26, 31, 22, 38, 44, 28, 36, 29, 48, 39, 55, 46, 61, 52, 42, 63, 51, 68, 57, 72, 60, 48, 34]
@@ -35,6 +36,7 @@ export default function DashboardPage() {
   const [metric, setMetric] = useState('Steps')
   const [dismissed, setDismissed] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const { steps: motionSteps, status: motionStatus, requestPermission } = useMotionPedometer()
   const { data } = useSWR(mounted ? '/api/dashboard' : null, fetcher)
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function DashboardPage() {
   // Keep the server render and the first client render identical. Live Supabase
   // values are applied only after hydration has completed.
   const hasLiveData = mounted && Boolean(data?.activity)
-  const steps = hasLiveData ? (data.activity.steps ?? 0) : 8420
+  const steps = motionSteps > 0 ? motionSteps : hasLiveData ? (data.activity.steps ?? 0) : 8420
   const calories = hasLiveData ? (data.activity.calories_burned ?? 0) : 426
   const distanceKm = hasLiveData ? ((data.activity.distance_meters ?? 0) / 1000).toFixed(1) : '6.2'
   const activeMinutes = hasLiveData ? (data.activity.active_minutes ?? 0) : 74
@@ -71,6 +73,13 @@ export default function DashboardPage() {
             <p className="card-kicker">Today&apos;s movement</p>
             <h2>Keep your rhythm</h2>
             <p className="muted">You&apos;re building a great habit. A little more movement will get you to your goal.</p>
+            <div className="motion-status" role="status">
+              {motionStatus === 'active' && <span>Motion tracking active</span>}
+              {motionStatus === 'starting' && <span>Starting motion tracking…</span>}
+              {motionStatus === 'unsupported' && <span>Motion sensors unavailable; local steps still work.</span>}
+              {motionStatus === 'denied' && <button className="motion-enable" onClick={() => void requestPermission(true)}>Enable motion access</button>}
+              {motionStatus === 'permission-required' && <button className="motion-enable" onClick={() => void requestPermission(true)}>Enable motion access</button>}
+            </div>
             <button className="soft-button">
               View activity <ArrowRight2 size="16" color="var(--muted-foreground)" />
             </button>
