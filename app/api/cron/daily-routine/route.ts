@@ -1,20 +1,19 @@
 import { NextResponse } from 'next/server'
-import webpush from 'web-push'
 import { createClient } from '@supabase/supabase-js'
-
-// Configure web-push
-webpush.setVapidDetails(
-  'mailto:your-email@example.com', // Best practice is to put an actual email here
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-)
+import { getWebPush } from '@/lib/push'
 
 export async function GET(request: Request) {
   try {
-    // 1. Verify this request is actually coming from Vercel Cron
-    const authHeader = request.headers.get('authorization');
-    if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // 1. Verify this request is actually coming from Vercel Cron.
+    // Fail CLOSED: without CRON_SECRET this endpoint would let anyone on the
+    // internet fire a push blast at every subscriber, so refuse to run at all.
+    const cronSecret = process.env.CRON_SECRET
+    if (!cronSecret) {
+      console.error('CRON_SECRET is not set; refusing to run the daily routine.')
+      return NextResponse.json({ error: 'Not configured' }, { status: 503 })
+    }
+    if (request.headers.get('authorization') !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -42,10 +41,11 @@ export async function GET(request: Request) {
       title: 'Time for your Daily Routine! 🏃‍♂️',
       body: 'Take a moment for your health. Open ZSTEPS to complete your daily goals.',
       url: '/', // You can change this to your routine specific page
-      icon: '/icon-192x192.png'
+      icon: '/icon.svg',
     })
 
     // 4. Send the notification to all subscribers
+    const webpush = getWebPush()
     const results = await Promise.allSettled(
       subscriptions.map(async (sub) => {
         const pushSubscription = {
