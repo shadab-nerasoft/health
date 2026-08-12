@@ -50,6 +50,7 @@ export default function DashboardPage() {
   const stepPercent = percent(today.steps, goals.steps)
   const distanceKm = derived.distanceMeters / 1000
   const hasSteps = ready && today.steps > 0
+  const hasWeekData = week.some((day) => day.steps > 0)
 
   const goalRows = [
     ['Steps', today.steps.toLocaleString(), goals.steps.toLocaleString(), percent(today.steps, goals.steps)],
@@ -107,7 +108,7 @@ export default function DashboardPage() {
             </div>
             <strong suppressHydrationWarning>{today.steps.toLocaleString()}</strong>
             <small suppressHydrationWarning>{stepPercent}% of daily goal</small>
-            <MiniBars values={weekBars} />
+            {hasWeekData && <MiniBars values={weekBars} />}
           </article>
           <article className="metric-card peach">
             <div className="metric-top">
@@ -118,7 +119,7 @@ export default function DashboardPage() {
               {derived.calories} <em>kcal</em>
             </strong>
             <small>Estimated from steps</small>
-            <MiniBars values={weekBars} color="var(--accent-peach)" />
+            {hasWeekData && <MiniBars values={weekBars} color="var(--accent-peach)" />}
           </article>
           <article className="metric-card green">
             <div className="metric-top">
@@ -129,7 +130,7 @@ export default function DashboardPage() {
               {distanceKm.toFixed(1)} <em>km</em>
             </strong>
             <small>0.76 m average stride</small>
-            <MiniBars values={weekBars} color="var(--accent-green)" />
+            {hasWeekData && <MiniBars values={weekBars} color="var(--accent-green)" />}
           </article>
           <article className="metric-card lavender">
             <div className="metric-top">
@@ -140,7 +141,7 @@ export default function DashboardPage() {
               {derived.activeMinutes} <em>min</em>
             </strong>
             <small>Estimated moving time</small>
-            <MiniBars values={weekBars} color="var(--accent-lavender)" />
+            {hasWeekData && <MiniBars values={weekBars} color="var(--accent-lavender)" />}
           </article>
         </StaggerItem>
 
@@ -154,23 +155,31 @@ export default function DashboardPage() {
               Trends <ArrowRight2 size="15" />
             </Link>
           </div>
-          <MiniBars values={weekBars} color="var(--ink)" />
-          <div className="week-labels">
-            {week.map((day) => (
-              <span key={day.date} suppressHydrationWarning>
-                {new Date(`${day.date}T00:00:00`).toLocaleDateString([], { weekday: 'narrow' })}
-              </span>
-            ))}
-          </div>
-          <div className="weekly-summary">
-            <div>
-              <strong suppressHydrationWarning>{weekAverage.toLocaleString()}</strong>
-              <span>average steps/day</span>
-            </div>
-            <b suppressHydrationWarning>
-              {week.filter((day) => day.steps > 0).length} <small>days with data</small>
-            </b>
-          </div>
+          {hasWeekData ? (
+            <>
+              <MiniBars values={weekBars} color="var(--ink)" />
+              <div className="week-labels">
+                {week.map((day) => (
+                  <span key={day.date} suppressHydrationWarning>
+                    {new Date(`${day.date}T00:00:00`).toLocaleDateString([], { weekday: 'narrow' })}
+                  </span>
+                ))}
+              </div>
+              <div className="weekly-summary">
+                <div>
+                  <strong suppressHydrationWarning>{weekAverage.toLocaleString()}</strong>
+                  <span>average steps/day</span>
+                </div>
+                <b suppressHydrationWarning>
+                  {week.filter((day) => day.steps > 0).length} <small>days with data</small>
+                </b>
+              </div>
+            </>
+          ) : (
+            <p className="panel-empty">
+              Your weekly chart appears once a day of steps is recorded. Start tracking above to fill it in.
+            </p>
+          )}
         </StaggerItem>
 
         <StaggerItem className="panel goals-panel">
