@@ -3,6 +3,7 @@ import { DM_Sans, Outfit } from 'next/font/google'
 import { ThemeProvider } from '@/components/wellness/theme-provider'
 import { InstallPrompt } from '@/components/wellness/install-prompt'
 import { SplashScreen } from '@/components/wellness/splash-screen'
+import { ServiceWorkerRegister } from '@/components/wellness/service-worker-register'
 import './globals.css'
 
 const sansFont = DM_Sans({
@@ -66,8 +67,10 @@ export default function RootLayout({
           {children}
           <SplashScreen />
           <InstallPrompt />
+          <ServiceWorkerRegister />
         </ThemeProvider>
       </body>
     </html>
   )
 }
+
