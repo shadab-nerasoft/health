@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Edit2, TickCircle } from 'iconsax-react'
 import { Stagger, StaggerItem } from '@/components/wellness/motion'
 import { DataPanel } from '@/components/wellness/data-panel'
+import { NotificationPanel } from '@/components/wellness/notification-panel'
 import { useWellness } from '@/hooks/use-wellness'
 import { percent, profileInitial, type ActivityLevel } from '@/lib/wellness/store'
 
