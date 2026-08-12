@@ -1,21 +1,21 @@
 import type { Metadata, Viewport } from 'next'
-import { Google_Sans, Google_Sans_Flex } from 'next/font/google'
+import { DM_Sans, Outfit } from 'next/font/google'
 import { ThemeProvider } from '@/components/wellness/theme-provider'
+import { InstallPrompt } from '@/components/wellness/install-prompt'
+import { SplashScreen } from '@/components/wellness/splash-screen'
 import './globals.css'
 
-const googleSans = Google_Sans({
+const sansFont = DM_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '700'],
   variable: '--font-sans',
-  adjustFontFallback: false,
   display: 'swap',
 })
 
-const googleSansFlex = Google_Sans_Flex({
+const displayFont = Outfit({
   subsets: ['latin'],
   weight: ['500', '600', '700'],
   variable: '--font-display',
-  adjustFontFallback: false,
   display: 'swap',
 })
 
@@ -58,13 +58,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`bg-background ${googleSans.variable} ${googleSansFlex.variable}`}
+      className={`bg-background ${sansFont.variable} ${displayFont.variable}`}
       suppressHydrationWarning
     >
       <body className="antialiased font-sans" suppressHydrationWarning>
         <ThemeProvider>
           {children}
-
+          <SplashScreen />
+          <InstallPrompt />
         </ThemeProvider>
       </body>
     </html>
