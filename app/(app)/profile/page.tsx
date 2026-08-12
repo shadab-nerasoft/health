@@ -197,6 +197,10 @@ export default function ProfilePage() {
       </StaggerItem>
 
       <StaggerItem>
+        <NotificationPanel />
+      </StaggerItem>
+
+      <StaggerItem>
         <DataPanel />
       </StaggerItem>
     </Stagger>
