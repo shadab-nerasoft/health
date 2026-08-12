@@ -62,7 +62,7 @@ export default function RootLayout({
       className={`bg-background ${googleSans.variable} ${googleSansFlex.variable}`}
       suppressHydrationWarning
     >
-      <body className="antialiased font-sans">
+      <body className="antialiased font-sans" suppressHydrationWarning>
         <ThemeProvider>
           {children}
           {process.env.NODE_ENV === 'production' && <Analytics />}

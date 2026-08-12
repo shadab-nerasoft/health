@@ -1,7 +1,7 @@
 'use client'
 
 import useSWR from 'swr'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Activity, ArrowRight2, Chart2, Drop, Flash, Lamp, TrendUp } from 'iconsax-react'
 import { Stagger, StaggerItem } from '@/components/wellness/motion'
 
@@ -34,14 +34,23 @@ function MiniBars({ values, color = 'var(--accent-blue)' }: { values: number[]; 
 export default function DashboardPage() {
   const [metric, setMetric] = useState('Steps')
   const [dismissed, setDismissed] = useState(false)
-  const { data } = useSWR('/api/dashboard', fetcher)
-  const steps = data?.activity?.steps ?? 0
-  const calories = data?.activity?.calories_burned ?? 0
-  const distanceKm = ((data?.activity?.distance_meters ?? 0) / 1000).toFixed(1)
-  const activeMinutes = data?.activity?.active_minutes ?? 0
-  const waterMl = data?.hydrationMl ?? 0
-  const waterGoalMl = data?.profile?.water_goal_ml ?? 2000
-  const stepPercent = Math.min(100, Math.round((steps / 10000) * 100))
+  const [mounted, setMounted] = useState(false)
+  const { data } = useSWR(mounted ? '/api/dashboard' : null, fetcher)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Keep the server render and the first client render identical. Live Supabase
+  // values are applied only after hydration has completed.
+  const hasLiveData = mounted && Boolean(data?.activity)
+  const steps = hasLiveData ? (data.activity.steps ?? 0) : 8420
+  const calories = hasLiveData ? (data.activity.calories_burned ?? 0) : 426
+  const distanceKm = hasLiveData ? ((data.activity.distance_meters ?? 0) / 1000).toFixed(1) : '6.2'
+  const activeMinutes = hasLiveData ? (data.activity.active_minutes ?? 0) : 74
+  const waterMl = hasLiveData ? (data.hydrationMl ?? 0) : 1200
+  const waterGoalMl = hasLiveData ? (data.profile?.water_goal_ml ?? 2000) : 2500
+  const stepPercent = hasLiveData ? Math.min(100, Math.round((steps / 10000) * 100)) : 84
 
   return (
     <>
@@ -76,7 +85,7 @@ export default function DashboardPage() {
               <Activity size="18" color="var(--accent-blue)" />
             </div>
             <strong>{steps.toLocaleString()}</strong>
-            <small>84% of daily goal</small>
+            <small>{stepPercent}% of daily goal</small>
             <MiniBars values={[30, 45, 42, 65, 50, 72, 64, 88]} />
           </article>
           <article className="metric-card peach">
