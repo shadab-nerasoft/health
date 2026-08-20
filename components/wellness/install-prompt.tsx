@@ -133,7 +133,6 @@ export function InstallPrompt() {
               </div>
               <div className="install-app-info">
                 <strong>ZSTEPS</strong>
-                <span>Personal wellness dashboard</span>
               </div>
             </div>
 
