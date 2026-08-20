@@ -2,6 +2,7 @@
 
 import { useInstallPrompt } from '@/hooks/use-install-prompt'
 import { AnimatePresence, motion } from 'framer-motion'
+import { AppLogo } from './app-logo'
 
 const overlayVariants = {
   hidden: { opacity: 0 },
@@ -128,7 +129,7 @@ export function InstallPrompt() {
             {/* App icon + info */}
             <div className="install-header">
               <div className="install-app-icon" aria-hidden="true">
-                <span>Z</span>
+                <AppLogo size="28" color="currentColor" />
               </div>
               <div className="install-app-info">
                 <strong>ZSTEPS</strong>

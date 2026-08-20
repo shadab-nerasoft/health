@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { AppLogo } from '@/components/wellness/app-logo'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -30,7 +31,7 @@ export default function LoginPage() {
   return (
     <main className="onboarding-shell">
       <section className="onboarding-card auth-card">
-        <div className="auth-brand"><span className="brand-mark">Z</span><strong>ZSTEPS</strong></div>
+        <div className="auth-brand"><span className="brand-mark"><AppLogo size="18" color="currentColor" /></span><strong>ZSTEPS</strong></div>
         <p className="eyebrow">Welcome back</p>
         <h1>Keep your next step simple.</h1>
         <p className="subheading">Sign in to continue your personal wellness plan.</p>

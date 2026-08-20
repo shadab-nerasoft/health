@@ -23,9 +23,13 @@ import {
   TrendUp,
   User,
 } from 'iconsax-react'
+import { AppLogo } from './app-logo'
 import { easeSmooth, navItemVariants } from './motion'
 import { useWellness } from '@/hooks/use-wellness'
 import { profileInitial } from '@/lib/wellness/store'
+
+import { NotificationModal } from './notification-modal'
+import { useNotifications } from '@/hooks/use-notifications'
 
 type NavLinkDef = { href: string; label: string; icon: ComponentType<any> }
 
@@ -131,12 +135,52 @@ function ThemeToggle({ collapsed }: { collapsed: boolean }) {
   )
 }
 
+function TopbarThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
+
+  const isDark = mounted && resolvedTheme === 'dark'
+
+  return (
+    <button
+      type="button"
+      className="icon-button"
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      <AnimatePresence initial={false} mode="wait">
+        {mounted && (
+          <motion.span
+            key={isDark ? 'sun' : 'moon'}
+            initial={{ opacity: 0, rotate: -90, scale: 0.6 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: 90, scale: 0.6 }}
+            transition={{ duration: 0.25, ease: easeSmooth }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            {isDark ? (
+              <Sun1 size="19" color="var(--foreground)" variant="Bold" />
+            ) : (
+              <Moon size="19" color="var(--foreground)" variant="Bold" />
+            )}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </button>
+  )
+}
+
 export function WellnessShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { ready, profile } = useWellness()
+  const { isSubscribed } = useNotifications()
   const initial = ready ? profileInitial(profile) : 'Z'
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
@@ -163,7 +207,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
         <div className="sidebar-head">
           <div className="brand">
             <div className="brand-mark" aria-hidden="true">
-              Z
+              <AppLogo size="18" color="currentColor" />
             </div>
             <AnimatePresence initial={false}>
               {!collapsed && (
@@ -266,7 +310,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
               <div className="sidebar-head">
                 <div className="brand">
                   <div className="brand-mark">
-                    Z
+                    <AppLogo size="18" color="currentColor" />
                   </div>
                   <span>ZSTEPS</span>
                 </div>
@@ -286,6 +330,9 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
                   <NavLink key={link.href} {...link} active={pathname === link.href} collapsed={false} />
                 ))}
               </nav>
+              <div className="sidebar-bottom" style={{ marginTop: 'auto', paddingTop: 16 }}>
+                <ThemeToggle collapsed={false} />
+              </div>
             </motion.aside>
           </>
         )}
@@ -296,11 +343,18 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
           <button className="mobile-menu" aria-label="Open menu" onClick={() => setMobileOpen(true)}>
             <More size="22" color="var(--foreground)" variant="Bold" />
           </button>
-            <div className="mobile-brand">ZSTEPS</div>
+          <div className="mobile-brand">ZSTEPS</div>
           <div className="topbar-actions">
-            <button className="icon-button" aria-label="Notifications">
+            <button
+              className="icon-button notification-button"
+              aria-label="Notifications"
+              onClick={() => setShowNotifications(true)}
+              title="Open Notifications"
+            >
               <Notification size="19" color="var(--foreground)" />
+              {isSubscribed && <span className="notification-badge" />}
             </button>
+            <TopbarThemeToggle />
             <Link href="/profile" className="avatar large" aria-label="Profile" suppressHydrationWarning>
               {initial}
             </Link>
@@ -319,6 +373,12 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
       </section>
+
+      <NotificationModal
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
     </div>
   )
 }
+

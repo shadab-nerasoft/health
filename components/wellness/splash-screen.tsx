@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion, type PanInfo } from 'framer-motion'
+import { motion, type PanInfo } from 'framer-motion'
 import {
   splashSlides,
   isSplashSeen,
@@ -9,179 +9,104 @@ import {
   type SplashSlide,
 } from '@/lib/wellness/splash'
 
-const SWIPE_THRESHOLD = 50
+const SWIPE_THRESHOLD = 40
 const AUTO_ADVANCE_MS = 5000
 
-/* ── Animation variants ─────────────────────────────────── */
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.4 } },
-  exit: { opacity: 0, transition: { duration: 0.35 } },
-} as const
-
-function slideVariants(direction: number) {
-  return {
-    enter: { x: direction > 0 ? '100%' : '-100%', opacity: 0 },
-    center: { x: 0, opacity: 1 },
-    exit: { x: direction > 0 ? '-100%' : '100%', opacity: 0 },
-  }
+/* ── Spring transition configuration for liquid smooth sliding ── */
+const springTransition = {
+  type: 'spring' as const,
+  stiffness: 300,
+  damping: 32,
+  mass: 0.8,
 }
-
-const imageVariants = {
-  enter: { scale: 1.05, opacity: 0 },
-  center: {
-    scale: 1,
-    opacity: 1,
-    transition: { duration: 0.8, ease: [0.33, 1, 0.68, 1] },
-  },
-  exit: { opacity: 0, transition: { duration: 0.4 } },
-} as const
-
-const textVariants = {
-  enter: { opacity: 0, y: 30 },
-  center: {
-    opacity: 1,
-    y: 0,
-    transition: { type: 'spring' as const, damping: 24, stiffness: 180, delay: 0.2 },
-  },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
-} as const
-
-const subtextVariants = {
-  enter: { opacity: 0, y: 20 },
-  center: {
-    opacity: 1,
-    y: 0,
-    transition: { type: 'spring' as const, damping: 24, stiffness: 180, delay: 0.3 },
-  },
-  exit: { opacity: 0, y: -15, transition: { duration: 0.18 } },
-} as const
-
-/* ── Slide component ────────────────────────────────────── */
-
-function Slide({
-  slide,
-  direction,
-}: {
-  slide: SplashSlide
-  direction: number
-}) {
-  const variants = slideVariants(direction)
-
-  return (
-    <motion.div
-      className="splash-slide"
-      style={{ backgroundColor: slide.bgColor }}
-      variants={variants}
-      initial="enter"
-      animate="center"
-      exit="exit"
-      transition={{ type: 'spring' as const, damping: 28, stiffness: 260, mass: 0.9 }}
-    >
-      <motion.div
-        className="splash-image-wrap"
-        variants={imageVariants}
-        initial="enter"
-        animate="center"
-        exit="exit"
-      >
-        <img
-          src={slide.image}
-          alt=""
-          className="splash-image"
-          draggable={false}
-        />
-      </motion.div>
-
-      <div className="splash-text-block">
-        <motion.h1
-          className="splash-headline"
-          variants={textVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-        >
-          {slide.headline}
-        </motion.h1>
-
-        <motion.p
-          className="splash-subtext"
-          variants={subtextVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-        >
-          {slide.subtext}
-        </motion.p>
-      </div>
-    </motion.div>
-  )
-}
-
-/* ── Main splash screen ─────────────────────────────────── */
 
 export function SplashScreen() {
   const [show, setShow] = useState(false)
-  const [[page, direction], setPage] = useState([0, 0])
+  const [page, setPage] = useState(0)
   const autoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const totalSlides = splashSlides.length
   const isLast = page === totalSlides - 1
 
+  // Handle client-side visibility check and body scroll lock
   useEffect(() => {
     if (!isSplashSeen()) {
       setShow(true)
-      // Prevent body scroll while splash is visible
       document.body.style.overflow = 'hidden'
+      document.body.style.touchAction = 'none'
     }
     return () => {
       document.body.style.overflow = ''
+      document.body.style.touchAction = ''
     }
-  }, [])
-
-  // Auto-advance
-  useEffect(() => {
-    if (!show) return
-    if (isLast) return
-
-    autoTimer.current = setTimeout(() => {
-      setPage(([prev]) => [prev + 1, 1])
-    }, AUTO_ADVANCE_MS)
-
-    return () => {
-      if (autoTimer.current) clearTimeout(autoTimer.current)
-    }
-  }, [page, show, isLast])
-
-  const goNext = useCallback(() => {
-    if (autoTimer.current) clearTimeout(autoTimer.current)
-    setPage(([prev]) => [Math.min(prev + 1, totalSlides - 1), 1])
-  }, [totalSlides])
-
-  const goPrev = useCallback(() => {
-    if (autoTimer.current) clearTimeout(autoTimer.current)
-    setPage(([prev]) => [Math.max(prev - 1, 0), -1])
   }, [])
 
   const finish = useCallback(() => {
     markSplashSeen()
     document.body.style.overflow = ''
+    document.body.style.touchAction = ''
     setShow(false)
   }, [])
 
+  const goNext = useCallback(() => {
+    if (autoTimer.current) clearTimeout(autoTimer.current)
+    setPage((prev) => Math.min(prev + 1, totalSlides - 1))
+  }, [totalSlides])
+
+  const goPrev = useCallback(() => {
+    if (autoTimer.current) clearTimeout(autoTimer.current)
+    setPage((prev) => Math.max(prev - 1, 0))
+  }, [])
+
+  // Auto-advance mechanism
+  useEffect(() => {
+    if (!show || isLast) return
+
+    autoTimer.current = setTimeout(() => {
+      setPage((prev) => (prev < totalSlides - 1 ? prev + 1 : prev))
+    }, AUTO_ADVANCE_MS)
+
+    return () => {
+      if (autoTimer.current) clearTimeout(autoTimer.current)
+    }
+  }, [page, show, isLast, totalSlides])
+
+  // Keyboard navigation for accessibility
+  useEffect(() => {
+    if (!show) return
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault()
+        if (isLast) finish()
+        else goNext()
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        goPrev()
+      } else if (e.key === 'Escape') {
+        e.preventDefault()
+        finish()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [show, isLast, goNext, goPrev, finish])
+
+  // Real-time continuous drag end calculation
   const handleDragEnd = useCallback(
     (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
       const { offset, velocity } = info
-      const swipe = Math.abs(offset.x) * velocity.x
+      const swipe = offset.x * velocity.x
 
-      if (offset.x < -SWIPE_THRESHOLD || swipe < -1000) {
+      if (offset.x < -SWIPE_THRESHOLD || swipe < -500) {
         if (isLast) {
           finish()
         } else {
           goNext()
         }
-      } else if (offset.x > SWIPE_THRESHOLD || swipe > 1000) {
+      } else if (offset.x > SWIPE_THRESHOLD || swipe > 500) {
         goPrev()
       }
     },
@@ -193,43 +118,81 @@ export function SplashScreen() {
   const currentSlide = splashSlides[page]
 
   return (
-    <motion.div
+    <div
+      ref={containerRef}
       className="splash-container"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Welcome and Onboarding"
     >
-      {/* Animated background color */}
+      {/* Background color layer */}
       <motion.div
         className="splash-bg"
         animate={{ backgroundColor: currentSlide.bgColor }}
-        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
       />
 
-      {/* Swipeable slide area */}
-      <div
-        className="splash-viewport"
-      >
-        <AnimatePresence initial={false} mode="wait" custom={direction}>
-          <motion.div
-            key={page}
-            className="splash-swipe-area"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.15}
-            onDragEnd={handleDragEnd}
-            style={{ touchAction: 'pan-y' }}
-          >
-            <Slide slide={currentSlide} direction={direction} />
-          </motion.div>
-        </AnimatePresence>
+      {/* Hardware-accelerated continuous horizontal sliding track */}
+      <div className="splash-viewport">
+        <motion.div
+          className="splash-track"
+          animate={{ x: `-${page * 100}%` }}
+          transition={springTransition}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragStart={() => {
+            if (autoTimer.current) clearTimeout(autoTimer.current)
+          }}
+          onDragEnd={handleDragEnd}
+        >
+          {splashSlides.map((slide, index) => {
+            const isActive = index === page
+            return (
+              <div key={slide.id} className="splash-slide-item">
+                <div className="splash-image-wrap">
+                  <img
+                    src={slide.image}
+                    alt=""
+                    className="splash-image"
+                    draggable={false}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                  />
+                </div>
+
+                <div className="splash-text-block">
+                  <motion.h1
+                    className="splash-headline"
+                    animate={{
+                      opacity: isActive ? 1 : 0.4,
+                      y: isActive ? 0 : 15,
+                    }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    {slide.headline}
+                  </motion.h1>
+
+                  <motion.p
+                    className="splash-subtext"
+                    animate={{
+                      opacity: isActive ? 0.92 : 0.3,
+                      y: isActive ? 0 : 10,
+                    }}
+                    transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    {slide.subtext}
+                  </motion.p>
+                </div>
+              </div>
+            )
+          })}
+        </motion.div>
       </div>
 
-      {/* Bottom controls */}
+      {/* Fixed bottom controls overlay */}
       <div className="splash-controls">
-        {/* Dot indicators */}
-        <div className="splash-dots" role="tablist" aria-label="Splash slides">
+        {/* Active dot indicators */}
+        <div className="splash-dots" role="tablist" aria-label="Onboarding slides">
           {splashSlides.map((slide, index) => (
             <button
               key={slide.id}
@@ -237,20 +200,21 @@ export function SplashScreen() {
               className={`splash-dot ${index === page ? 'active' : ''}`}
               onClick={() => {
                 if (autoTimer.current) clearTimeout(autoTimer.current)
-                setPage([index, index > page ? 1 : -1])
+                setPage(index)
               }}
               role="tab"
               aria-selected={index === page}
-              aria-label={`Slide ${index + 1}`}
+              aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>
 
-        {/* CTA button */}
+        {/* CTA Next / Get Started button */}
         <motion.button
           type="button"
           className="splash-cta"
           onClick={isLast ? finish : goNext}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.96 }}
         >
           {isLast ? 'Get Started' : 'Next'}
@@ -269,7 +233,7 @@ export function SplashScreen() {
           </svg>
         </motion.button>
 
-        {/* Skip */}
+        {/* Skip action button */}
         {!isLast && (
           <button
             type="button"
@@ -280,6 +244,6 @@ export function SplashScreen() {
           </button>
         )}
       </div>
-    </motion.div>
+    </div>
   )
 }

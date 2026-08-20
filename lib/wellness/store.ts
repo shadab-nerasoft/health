@@ -31,6 +31,10 @@ export type Profile = {
   heightCm: number | null
   weightKg: number | null
   activityLevel: ActivityLevel
+  primary_goal?: 'weight_loss' | 'weight_gain' | 'maintenance' | 'habit'
+  dietary_preferences?: string[]
+  meal_count?: number
+  target_weight_kg?: number
 }
 
 export type WellnessState = {
@@ -56,6 +60,10 @@ export const defaultProfile: Profile = {
   heightCm: null,
   weightKg: null,
   activityLevel: 'moderate',
+  primary_goal: 'weight_loss',
+  dietary_preferences: ['No preference'],
+  meal_count: 3,
+  target_weight_kg: undefined,
 }
 
 /** Initial shown in the avatar; falls back to the brand letter before a name is set. */
