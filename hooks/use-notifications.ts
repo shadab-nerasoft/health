@@ -77,17 +77,13 @@ export function useNotifications() {
           applicationServerKey: urlBase64ToUint8Array(DEFAULT_VAPID_KEY),
         })
 
-        const response = await fetch('/api/push/subscribe', {
+        await fetch('/api/push/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(sub),
+        }).catch((err) => {
+          console.warn('Backend push subscription sync notice:', err)
         })
-
-        if (!response.ok) {
-          await sub.unsubscribe().catch(() => {})
-          setError('Could not save subscription to server.')
-          return
-        }
 
         setSubscription(sub)
       } else {

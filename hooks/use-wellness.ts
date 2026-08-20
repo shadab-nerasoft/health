@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   type Goals,
   type Profile,
@@ -116,8 +116,12 @@ export function useWellness() {
 
   const exportData = useCallback(() => exportPayload(getState()), [])
 
-  const today = getDay(state)
-  const derived = derivedFromSteps(today.steps)
+  const today = useMemo(() => getDay(state), [state])
+  const derived = useMemo(() => derivedFromSteps(today.steps), [today.steps])
+  const todayWaterEntries = useMemo(
+    () => state.waterEntries.filter((row) => row.date === today.date),
+    [state.waterEntries, today.date]
+  )
 
   return {
     ready,
@@ -128,7 +132,7 @@ export function useWellness() {
     derived,
     history: (count: number) => lastNDays(state, count),
     streak: streakDays(state),
-    todayWaterEntries: state.waterEntries.filter((row) => row.date === today.date),
+    todayWaterEntries,
     latestWeight: state.weights[0] ?? null,
     addSteps,
     setSteps,

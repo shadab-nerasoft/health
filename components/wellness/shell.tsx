@@ -30,6 +30,11 @@ import { profileInitial } from '@/lib/wellness/store'
 
 import { NotificationModal } from './notification-modal'
 import { useNotifications } from '@/hooks/use-notifications'
+import { AlarmModal } from './alarm-modal'
+import { AlarmRingingModal } from './alarm-ringing-modal'
+import { FloatingAlarmButton } from './floating-alarm-button'
+import { useAlarmMonitor } from '@/lib/wellness/alarm-store'
+import { Timer1 } from 'iconsax-react'
 
 type NavLinkDef = { href: string; label: string; icon: ComponentType<any> }
 
@@ -181,7 +186,10 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showAlarms, setShowAlarms] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+
+  useAlarmMonitor()
 
   useEffect(() => {
     const stored = window.localStorage.getItem('zsteps-sidebar-collapsed')
@@ -346,6 +354,14 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
           <div className="mobile-brand">ZSTEPS</div>
           <div className="topbar-actions">
             <button
+              className="icon-button"
+              aria-label="Alarms"
+              onClick={() => setShowAlarms(true)}
+              title="Open Alarms"
+            >
+              <Timer1 size="19" color="var(--foreground)" />
+            </button>
+            <button
               className="icon-button notification-button"
               aria-label="Notifications"
               onClick={() => setShowNotifications(true)}
@@ -373,6 +389,15 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
       </section>
+
+      <FloatingAlarmButton onClick={() => setShowAlarms(true)} />
+
+      <AlarmModal
+        isOpen={showAlarms}
+        onClose={() => setShowAlarms(false)}
+      />
+
+      <AlarmRingingModal />
 
       <NotificationModal
         isOpen={showNotifications}

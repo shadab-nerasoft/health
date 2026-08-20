@@ -60,7 +60,7 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
         setNudges(dynamicNudges)
       }
     }
-  }, [isOpen, profile, goals, today, derived, latestWeight])
+  }, [isOpen])
 
   // Trigger AI to craft a fresh, 100% dynamic diet / meal / weight goal nudge
   const handleGenerateAINudge = async () => {
