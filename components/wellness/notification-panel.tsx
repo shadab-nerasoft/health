@@ -36,13 +36,19 @@ export function NotificationPanel() {
             </p>
           )}
 
+          {permission === 'denied' && !error && (
+            <p className="notify-error" role="alert">
+              Notifications are blocked in browser settings. Please allow notifications in site settings (lock icon in address bar).
+            </p>
+          )}
+
           <div className="sensor-actions" style={{ marginTop: 18 }}>
             {isSubscribed ? (
               <>
                 <button className="chip-button" onClick={unsubscribe} disabled={isLoading}>
                   {isLoading ? 'Working…' : 'Turn off'}
                 </button>
-                <button className="chip-button" onClick={sendTestNotification} disabled={isLoading}>
+                <button className="chip-button" onClick={() => sendTestNotification()} disabled={isLoading}>
                   <NotificationBing size="15" color="var(--muted-foreground)" /> Send test
                 </button>
               </>
@@ -52,7 +58,7 @@ export function NotificationPanel() {
                 onClick={subscribe}
                 disabled={isLoading || permission === 'denied'}
               >
-                <NotificationIcon size="15" color="currentColor" />
+                <NotificationIcon size="15" color="#ffffff" />
                 {isLoading ? 'Working…' : 'Turn on reminders'}
               </button>
             )}

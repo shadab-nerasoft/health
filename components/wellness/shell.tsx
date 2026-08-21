@@ -215,7 +215,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
         <div className="sidebar-head">
           <div className="brand">
             <div className="brand-mark" aria-hidden="true">
-              <AppLogo size="18" color="currentColor" />
+              <AppLogo size="18" color="#a855f7" />
             </div>
             <AnimatePresence initial={false}>
               {!collapsed && (
@@ -318,7 +318,7 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
               <div className="sidebar-head">
                 <div className="brand">
                   <div className="brand-mark">
-                    <AppLogo size="18" color="currentColor" />
+                    <AppLogo size="18" color="#a855f7" />
                   </div>
                   <span>ZSTEPS</span>
                 </div>

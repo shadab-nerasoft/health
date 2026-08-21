@@ -16,6 +16,7 @@ import {
   Trash,
   VolumeHigh,
   VolumeCross,
+  Edit2,
 } from 'iconsax-react'
 import {
   useAlarmStore,
@@ -28,6 +29,16 @@ interface AlarmModalProps {
   isOpen: boolean
   onClose: () => void
 }
+
+const WEEK_DAYS = [
+  { num: 1, label: 'Mon' },
+  { num: 2, label: 'Tue' },
+  { num: 3, label: 'Wed' },
+  { num: 4, label: 'Thu' },
+  { num: 5, label: 'Fri' },
+  { num: 6, label: 'Sat' },
+  { num: 0, label: 'Sun' },
+]
 
 function AnalogClock() {
   const [time, setTime] = useState<Date | null>(null)
@@ -138,10 +149,11 @@ function CategoryIcon({ category }: { category: AlarmCategory }) {
 }
 
 export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
-  const { alarms, toggleAlarm, addAlarm, deleteAlarm } = useAlarmStore()
+  const { alarms, toggleAlarm, addAlarm, updateAlarm, deleteAlarm } = useAlarmStore()
   const [showAddDialog, setShowAddDialog] = useState(false)
+  const [editingAlarm, setEditingAlarm] = useState<AlarmItem | null>(null)
 
-  // New Alarm form state
+  // Alarm form state
   const [newTime, setNewTime] = useState('07:30')
   const [newLabel, setNewLabel] = useState('Morning Run')
   const [newCategory, setNewCategory] = useState<AlarmCategory>('sun')
@@ -153,27 +165,57 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   const todayIndex = (new Date().getDay() + 6) % 7 // 0 = Mon, ..., 6 = Sun
 
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newTime || !newLabel) return
-    addAlarm({
-      time: newTime,
-      label: newLabel,
-      category: newCategory,
-      enabled: true,
-      days: selectedDays,
-      soundEnabled: soundOn,
-    })
-    setShowAddDialog(false)
+  const openAddDialog = () => {
+    setEditingAlarm(null)
+    setNewTime('07:30')
+    setNewLabel('Morning Run')
+    setNewCategory('sun')
+    setSelectedDays([1, 2, 3, 4, 5])
+    setSoundOn(true)
+    setShowAddDialog(true)
   }
 
-  const toggleDaySelection = (dayIndex: number) => {
-    // 0 = Sun, 1 = Mon ...
-    const dayNum = (dayIndex + 1) % 7
-    if (selectedDays.includes(dayNum)) {
-      setSelectedDays(selectedDays.filter((d) => d !== dayNum))
+  const openEditDialog = (alarm: AlarmItem) => {
+    setEditingAlarm(alarm)
+    setNewTime(alarm.time)
+    setNewLabel(alarm.label)
+    setNewCategory(alarm.category)
+    setSelectedDays(alarm.days || [0, 1, 2, 3, 4, 5, 6])
+    setSoundOn(alarm.soundEnabled ?? true)
+    setShowAddDialog(true)
+  }
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newTime || !newLabel) return
+
+    if (editingAlarm) {
+      updateAlarm(editingAlarm.id, {
+        time: newTime,
+        label: newLabel,
+        category: newCategory,
+        days: selectedDays,
+        soundEnabled: soundOn,
+      })
     } else {
-      setSelectedDays([...selectedDays, dayNum])
+      addAlarm({
+        time: newTime,
+        label: newLabel,
+        category: newCategory,
+        enabled: true,
+        days: selectedDays,
+        soundEnabled: soundOn,
+      })
+    }
+    setShowAddDialog(false)
+    setEditingAlarm(null)
+  }
+
+  const handleDeleteCurrent = () => {
+    if (editingAlarm) {
+      deleteAlarm(editingAlarm.id)
+      setShowAddDialog(false)
+      setEditingAlarm(null)
     }
   }
 
@@ -203,7 +245,7 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
             <div className="flex items-center gap-2">
               <button
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-300/20 text-purple-200 hover:bg-purple-300/30 transition-all active:scale-95"
-                onClick={() => setShowAddDialog(true)}
+                onClick={openAddDialog}
                 title="Add Alarm"
               >
                 <Category size="20" color="#d8b4fe" variant="Bold" />
@@ -213,7 +255,7 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
                 onClick={onClose}
                 aria-label="Close"
               >
-                <CloseCircle size="20" />
+                <CloseCircle size="20" color="#94a3b8" />
               </button>
             </div>
           </div>
@@ -251,7 +293,7 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
               </div>
 
               <button
-                onClick={() => setShowAddDialog(true)}
+                onClick={openAddDialog}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-300 text-slate-950 font-bold shadow-md shadow-purple-500/20 hover:bg-purple-200 active:scale-95 transition-all"
                 title="Add New Alarm"
               >
@@ -268,14 +310,15 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className={`group relative flex flex-col justify-between p-4 min-h-[140px] rounded-3xl border transition-all ${
+                  className={`group relative flex flex-col justify-between p-4 min-h-[140px] rounded-3xl border transition-all cursor-pointer ${
                     alarm.enabled
                       ? 'bg-gradient-to-br from-purple-950/40 via-[#1c1b26] to-[#16151f] border-purple-500/30 shadow-lg shadow-purple-950/20'
                       : 'bg-[#16151f]/80 border-white/5 opacity-60 hover:opacity-80'
                   }`}
+                  onClick={() => openEditDialog(alarm)}
                 >
-                  {/* Top row badge & icon */}
-                  <div className="flex items-center justify-between">
+                  {/* Top row badge & action icons */}
+                  <div className="flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={() => toggleAlarm(alarm.id)}
                       className={`flex h-7 px-3 items-center justify-center rounded-full text-xs font-bold transition-all ${
@@ -288,13 +331,19 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
                     </button>
 
                     <div className="flex items-center gap-1.5">
-                      <CategoryIcon category={alarm.category} />
+                      <button
+                        onClick={() => openEditDialog(alarm)}
+                        className="p-1 text-slate-400 hover:text-purple-300 transition-all"
+                        title="Edit Alarm"
+                      >
+                        <Edit2 size="14" color="#d8b4fe" />
+                      </button>
                       <button
                         onClick={() => deleteAlarm(alarm.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-red-400 transition-all"
+                        className="p-1 text-slate-400 hover:text-red-400 transition-all"
                         title="Delete Alarm"
                       >
-                        <Trash size="14" />
+                        <Trash size="14" color="#ef4444" />
                       </button>
                     </div>
                   </div>
@@ -314,7 +363,7 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
           </div>
         </motion.div>
 
-        {/* Add Alarm Form Modal Overlay */}
+        {/* Add/Edit Alarm Form Modal Overlay */}
         <AnimatePresence>
           {showAddDialog && (
             <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -323,24 +372,32 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="absolute inset-0 bg-black/80 backdrop-blur-md"
-                onClick={() => setShowAddDialog(false)}
+                onClick={() => {
+                  setShowAddDialog(false)
+                  setEditingAlarm(null)
+                }}
               />
 
               <motion.form
-                onSubmit={handleCreate}
+                onSubmit={handleSave}
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="relative w-full max-w-sm rounded-3xl bg-[#181722] p-6 text-white border border-purple-500/20 shadow-2xl space-y-4"
+                className="relative w-full max-w-sm rounded-3xl bg-[#181722] p-6 text-white border border-purple-500/20 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
               >
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <h3 className="text-lg font-bold text-white">Create New Alarm</h3>
+                  <h3 className="text-lg font-bold text-white">
+                    {editingAlarm ? 'Edit Alarm' : 'Create New Alarm'}
+                  </h3>
                   <button
                     type="button"
-                    onClick={() => setShowAddDialog(false)}
+                    onClick={() => {
+                      setShowAddDialog(false)
+                      setEditingAlarm(null)
+                    }}
                     className="text-slate-400 hover:text-white"
                   >
-                    <CloseCircle size="20" />
+                    <CloseCircle size="20" color="#94a3b8" />
                   </button>
                 </div>
 
@@ -398,6 +455,38 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
                   </div>
                 </div>
 
+                {/* Repeat Days Picker */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                    Repeat Days
+                  </label>
+                  <div className="flex items-center justify-between gap-1 bg-white/5 p-2 rounded-xl border border-white/5">
+                    {WEEK_DAYS.map((day) => {
+                      const isSelected = selectedDays.includes(day.num)
+                      return (
+                        <button
+                          key={day.num}
+                          type="button"
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedDays(selectedDays.filter((d) => d !== day.num))
+                            } else {
+                              setSelectedDays([...selectedDays, day.num])
+                            }
+                          }}
+                          className={`h-8 w-8 rounded-lg text-xs font-bold transition-all ${
+                            isSelected
+                              ? 'bg-purple-500 text-white shadow-sm'
+                              : 'text-slate-400 hover:bg-white/10'
+                          }`}
+                        >
+                          {day.label[0]}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
                 {/* Sound Toggle */}
                 <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
                   <div className="flex items-center gap-2 text-sm font-medium">
@@ -425,9 +514,22 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 pt-2">
+                  {editingAlarm && (
+                    <button
+                      type="button"
+                      onClick={handleDeleteCurrent}
+                      className="py-3 px-3 rounded-xl bg-red-500/20 text-red-300 hover:bg-red-500/30 text-sm font-semibold flex items-center justify-center gap-1"
+                      title="Delete Alarm"
+                    >
+                      <Trash size="16" color="#ef4444" />
+                    </button>
+                  )}
                   <button
                     type="button"
-                    onClick={() => setShowAddDialog(false)}
+                    onClick={() => {
+                      setShowAddDialog(false)
+                      setEditingAlarm(null)
+                    }}
                     className="flex-1 py-3 rounded-xl bg-white/5 text-slate-300 text-sm font-semibold hover:bg-white/10"
                   >
                     Cancel
@@ -436,7 +538,7 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
                     type="submit"
                     className="flex-1 py-3 rounded-xl bg-purple-500 text-white text-sm font-semibold hover:bg-purple-400 shadow-lg shadow-purple-500/30"
                   >
-                    Save Alarm
+                    {editingAlarm ? 'Update Alarm' : 'Save Alarm'}
                   </button>
                 </div>
               </motion.form>
@@ -447,3 +549,4 @@ export function AlarmModal({ isOpen, onClose }: AlarmModalProps) {
     </AnimatePresence>
   )
 }
+

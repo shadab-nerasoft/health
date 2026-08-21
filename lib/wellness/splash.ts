@@ -13,7 +13,7 @@ export const SPLASH_STORAGE_KEY = "zsteps-splash-seen";
 export const splashSlides: SplashSlide[] = [
   {
     id: 1,
-    image: "/splash/splash1.png",
+    image: "/splash/splash11.png",
     headline: "Your Wellness,\nYour Way",
     subtext:
       "Track steps, water, and goals — all in one calm, personal dashboard.",
@@ -21,7 +21,7 @@ export const splashSlides: SplashSlide[] = [
   },
   {
     id: 2,
-    image: "/splash/splash2.png",
+    image: "/splash/splash22.png",
     headline: "Move More,\nFeel Better",
     subtext:
       "Smart insights that gently nudge you toward healthier daily habits.",
@@ -29,7 +29,7 @@ export const splashSlides: SplashSlide[] = [
   },
   {
     id: 3,
-    image: "/splash/splash3.png",
+    image: "/splash/splash33.png",
     headline: "Rinki,\nOff Record",
     subtext:
       "Every step you take is a step closer to the best version of yourself.",

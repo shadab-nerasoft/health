@@ -23,7 +23,7 @@ export function useNotifications() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!('Notification' in window)) {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
       setIsLoading(false)
       return
     }
@@ -31,23 +31,56 @@ export function useNotifications() {
     setIsSupported(true)
     setPermission(Notification.permission)
 
+    let cancelled = false
+
+    // Listen for permission status changes if browser supports Permission API
+    if ('permissions' in navigator && typeof navigator.permissions.query === 'function') {
+      navigator.permissions
+        .query({ name: 'notifications' as PermissionName })
+        .then((permissionStatus) => {
+          if (cancelled) return
+          setPermission(permissionStatus.state as NotificationPermission)
+          permissionStatus.onchange = () => {
+            if (!cancelled) {
+              setPermission(permissionStatus.state as NotificationPermission)
+            }
+          }
+        })
+        .catch(() => {
+          // Ignore permissions query errors
+        })
+    }
+
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       setIsLoading(false)
       return
     }
 
-    let cancelled = false
-    navigator.serviceWorker.ready
-      .then((registration) => registration.pushManager.getSubscription())
-      .then((sub) => {
-        if (!cancelled) setSubscription(sub)
-      })
-      .catch(() => {
-        if (!cancelled) setError('Could not read notification status.')
-      })
-      .finally(() => {
+    const checkSubscription = async () => {
+      try {
+        // Timeout race condition (2.5s) to prevent hanging UI on refresh
+        const readyPromise = navigator.serviceWorker.ready
+        const timeoutPromise = new Promise<undefined>((resolve) =>
+          setTimeout(() => resolve(undefined), 2500)
+        )
+
+        const registration = await Promise.race([readyPromise, timeoutPromise])
+        if (cancelled) return
+
+        if (registration && registration.pushManager) {
+          const sub = await registration.pushManager.getSubscription()
+          if (!cancelled) setSubscription(sub)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.warn('Notification subscription check warning:', err)
+        }
+      } finally {
         if (!cancelled) setIsLoading(false)
-      })
+      }
+    }
+
+    checkSubscription()
 
     return () => {
       cancelled = true
@@ -71,21 +104,30 @@ export function useNotifications() {
       }
 
       if ('serviceWorker' in navigator && 'PushManager' in window) {
-        const registration = await navigator.serviceWorker.ready
-        const sub = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(DEFAULT_VAPID_KEY),
-        })
+        const readyPromise = navigator.serviceWorker.ready
+        const timeoutPromise = new Promise<undefined>((resolve) =>
+          setTimeout(() => resolve(undefined), 3000)
+        )
+        const registration = await Promise.race([readyPromise, timeoutPromise])
 
-        await fetch('/api/push/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(sub),
-        }).catch((err) => {
-          console.warn('Backend push subscription sync notice:', err)
-        })
+        if (registration && registration.pushManager) {
+          const sub = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(DEFAULT_VAPID_KEY),
+          })
 
-        setSubscription(sub)
+          await fetch('/api/push/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sub),
+          }).catch((err) => {
+            console.warn('Backend push subscription sync notice:', err)
+          })
+
+          setSubscription(sub)
+        } else {
+          setSubscription({} as PushSubscription)
+        }
       } else {
         setSubscription({} as PushSubscription)
       }
@@ -140,7 +182,12 @@ export function useNotifications() {
         }
 
         if ('serviceWorker' in navigator) {
-          const registration = await navigator.serviceWorker.ready
+          const readyPromise = navigator.serviceWorker.ready
+          const timeoutPromise = new Promise<undefined>((resolve) =>
+            setTimeout(() => resolve(undefined), 1500)
+          )
+          const registration = await Promise.race([readyPromise, timeoutPromise])
+
           if (registration && registration.showNotification) {
             await registration.showNotification(title, {
               body,

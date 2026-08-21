@@ -195,7 +195,12 @@ export async function triggerBrowserPush(nudge: AINudge) {
   if (Notification.permission === 'granted') {
     try {
       if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.ready
+        const readyPromise = navigator.serviceWorker.ready
+        const timeoutPromise = new Promise<undefined>((resolve) =>
+          setTimeout(() => resolve(undefined), 1500)
+        )
+        const registration = await Promise.race([readyPromise, timeoutPromise])
+
         if (registration && registration.showNotification) {
           await registration.showNotification(nudge.title, {
             body: nudge.desc,

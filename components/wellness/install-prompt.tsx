@@ -129,7 +129,7 @@ export function InstallPrompt() {
             {/* App icon + info */}
             <div className="install-header">
               <div className="install-app-icon" aria-hidden="true">
-                <AppLogo size="28" color="currentColor" />
+                <AppLogo size="28" color="#a855f7" />
               </div>
               <div className="install-app-info">
                 <strong>ZSTEPS</strong>

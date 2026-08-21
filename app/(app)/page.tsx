@@ -152,7 +152,7 @@ export default function DashboardPage() {
               <h2>Steps</h2>
             </div>
             <Link href="/progress" className="more-button">
-              Trends <ArrowRight2 size="15" />
+              Trends <ArrowRight2 size="15" color="#94a3b8" />
             </Link>
           </div>
           {hasWeekData ? (
@@ -189,7 +189,7 @@ export default function DashboardPage() {
               <h2>Today&apos;s goals</h2>
             </div>
             <Link href="/goals" className="more-button">
-              Edit <ArrowRight2 size="15" />
+              Edit <ArrowRight2 size="15" color="#94a3b8" />
             </Link>
           </div>
           {goalRows.map(([name, current, target, value]) => (
@@ -240,7 +240,7 @@ export default function DashboardPage() {
           <Link href="/water" className="dismiss">
             Log water
           </Link>
-          <ArrowRight2 size="18" />
+          <ArrowRight2 size="18" color="#94a3b8" />
         </StaggerItem>
       </Stagger>
     </>

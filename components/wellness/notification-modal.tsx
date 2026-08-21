@@ -217,7 +217,7 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
                     onClick={handleGenerateAINudge}
                     disabled={isGeneratingAI}
                   >
-                    <MagicStar size="16" color="currentColor" variant="Bold" />
+                    <MagicStar size="16" color="#ffffff" variant="Bold" />
                     {isGeneratingAI ? 'Crafting AI Nudge…' : 'Generate AI Nudge'}
                   </button>
                 </>
@@ -229,7 +229,7 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
                       className="notification-btn secondary full"
                       onClick={() => setShowGuide((v) => !v)}
                     >
-                      <InfoCircle size="16" color="currentColor" />
+                      <InfoCircle size="16" color="#94a3b8" />
                       {showGuide ? 'Hide Instructions' : 'How to Unblock Notifications'}
                     </button>
                   ) : (
@@ -239,7 +239,7 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
                       onClick={subscribe}
                       disabled={isLoading}
                     >
-                      <NotificationBing size="16" color="currentColor" variant="Bold" />
+                      <NotificationBing size="16" color="#ffffff" variant="Bold" />
                       {isLoading ? 'Enabling…' : 'Turn On Dynamic Reminders'}
                     </button>
                   )}
