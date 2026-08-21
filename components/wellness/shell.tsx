@@ -72,7 +72,7 @@ function NavLink({
 }: NavLinkDef & { active: boolean; collapsed: boolean }) {
   return (
     <Link href={href} className={`nav-item ${active ? 'active' : ''}`} title={collapsed ? label : undefined}>
-      <Icon size="19" color={active ? 'var(--foreground)' : 'var(--muted-foreground)'} variant={active ? 'Bold' : 'Linear'} />
+      <Icon size="19" color={active ? 'var(--primary)' : 'var(--muted-foreground)'} variant={active ? 'Bold' : 'Linear'} />
       <AnimatePresence initial={false}>
         {!collapsed && (
           <motion.span

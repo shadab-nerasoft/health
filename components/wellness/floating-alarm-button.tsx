@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { Timer1 } from 'iconsax-react'
 import { useAlarmStore } from '@/lib/wellness/alarm-store'
-import { easeSmooth } from './motion'
+import { springTouch } from './motion'
 
 interface FloatingAlarmButtonProps {
   onClick: () => void
@@ -19,17 +19,17 @@ export function FloatingAlarmButton({ onClick }: FloatingAlarmButtonProps) {
       onClick={onClick}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      whileHover={{ scale: 1.08 }}
+      whileHover={{ scale: 1.06 }}
       whileTap={{ scale: 0.92 }}
-      transition={{ duration: 0.3, ease: easeSmooth }}
-      className="fixed bottom-20 right-5 z-40 sm:bottom-6 sm:right-6 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-purple-700/30 via-purple-600/30 to-indigo-500/30 text-white shadow-xl shadow-purple-600/30 border border-white/20 backdrop-blur-md focus:outline-none"
+      transition={springTouch}
+      className="fixed bottom-20 right-5 z-40 sm:bottom-6 sm:right-6 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-purple-700 via-purple-600 to-purple-500 text-white shadow-lg shadow-purple-600/30 border border-purple-400/30 backdrop-blur-md focus:outline-none"
       title="Open Alarms & Timers"
       aria-label="Open Alarms"
     >
-      <Timer1 size="30" color="#ffffff" variant="Bold" />
+      <Timer1 size="28" color="#ffffff" variant="Bold" />
 
       {activeCount > 0 && (
-        <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] px-1 items-center justify-center rounded-full bg-purple-300 text-[11px] font-extrabold text-slate-950 shadow-md">
+        <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] px-1.5 items-center justify-center rounded-full bg-purple-300 text-[11px] font-extrabold text-purple-950 shadow-md">
           {activeCount}
         </span>
       )}
