@@ -19,6 +19,7 @@ import {
   More,
   Notification,
   Setting2,
+  Setting4,
   Sun1,
   TrendUp,
   User,
@@ -348,10 +349,12 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
 
       <section className="content">
         <header className="topbar">
-          <button className="mobile-menu" aria-label="Open menu" onClick={() => setMobileOpen(true)}>
-            <More size="22" color="var(--foreground)" variant="Bold" />
-          </button>
-          <div className="mobile-brand">ZSTEPS</div>
+          <div className="mobile-brand">
+            <div className="brand-mark" aria-hidden="true">
+              <AppLogo size="18" color="#a855f7" />
+            </div>
+            <span>ZSTEPS</span>
+          </div>
           <div className="topbar-actions">
             <button
               className="icon-button"
@@ -371,9 +374,15 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
               {isSubscribed && <span className="notification-badge" />}
             </button>
             <TopbarThemeToggle />
-            <Link href="/profile" className="avatar large" aria-label="Profile" suppressHydrationWarning>
-              {initial}
-            </Link>
+            <button
+              type="button"
+              className="icon-button"
+              aria-label="Settings"
+              onClick={() => setMobileOpen(true)}
+              title="Settings & Menu"
+            >
+              <Setting4 size="19" color="var(--foreground)" />
+            </button>
           </div>
         </header>
         {children}

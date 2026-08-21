@@ -679,8 +679,7 @@ nav {
   align-items: center;
   gap: 14px;
 }
-.icon-button,
-.mobile-menu {
+.icon-button {
   display: grid;
   place-items: center;
   width: 40px;
@@ -690,7 +689,17 @@ nav {
   background: var(--card);
   color: var(--foreground);
 }
-.mobile-menu,
+.mobile-menu {
+  display: grid;
+  place-items: center;
+  width: auto;
+  height: auto;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  color: #A855F7;
+}
 .mobile-brand {
   display: none;
 }
@@ -2039,13 +2048,9 @@ nav {
   .topbar {
     justify-content: space-between;
   }
-  .mobile-menu,
   .mobile-brand {
     display: flex;
-    justify-content: center;
     align-items: center;
-  }
-  .mobile-brand {
     font-size: 17px;
   }
   .page-heading {
