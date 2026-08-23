@@ -22,3 +22,6 @@ android/**/*.keystore
 android/app/src/main/assets/public/
 android/app/src/main/assets/capacitor.config.json
 android/app/google-services.json
+
+# The APK the website offers for download is a build artifact, not source.
+public/downloads/*.apk

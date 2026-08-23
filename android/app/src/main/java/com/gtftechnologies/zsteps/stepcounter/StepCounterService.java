@@ -12,6 +12,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.Locale;
+
 import androidx.core.app.NotificationCompat;
 
 import com.gtftechnologies.zsteps.MainActivity;
@@ -129,19 +131,48 @@ public class StepCounterService extends Service implements StepTracker.StepListe
         manager.createNotificationChannel(channel);
     }
 
+    /**
+     * Collapsed: steps and calories on one line. Expanded: the full picture —
+     * steps, calories, distance, water and heart rate.
+     *
+     * All of it comes from SharedPreferences, so the notification stays accurate
+     * while the app is closed and no WebView exists to ask.
+     */
     private Notification buildNotification(long steps) {
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) flags |= PendingIntent.FLAG_IMMUTABLE;
         PendingIntent open = PendingIntent.getActivity(
             this, 0, new Intent(this, MainActivity.class), flags);
 
+        StepStore store = tracker.store();
+        long goal = store.stepGoal();
+        int percent = goal > 0 ? (int) Math.min(100, (steps * 100) / goal) : 0;
+        int calories = store.caloriesToday();
+        int heartRate = store.heartRate();
+
+        String title = String.format(Locale.US, "%,d steps today", steps);
+        String summary = String.format(Locale.US, "%d%% of goal · %,d kcal", percent, calories);
+
+        StringBuilder detail = new StringBuilder();
+        detail.append(String.format(Locale.US, "%,d steps · %d%% of %,d", steps, percent, goal));
+        detail.append(String.format(Locale.US, "%n%,d kcal · %.2f km · %d active min",
+            calories, store.distanceKmToday(), store.activeMinutesToday()));
+        detail.append(String.format(Locale.US, "%nWater %.1f L of %.1f L",
+            store.waterMl() / 1000.0, store.waterGoalMl() / 1000.0));
+        detail.append(heartRate > 0
+            ? String.format(Locale.US, "%nHeart rate %d bpm", heartRate)
+            : String.format(Locale.US, "%nHeart rate — connect a monitor"));
+
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Counting your steps")
-            .setContentText(String.format(java.util.Locale.US, "%,d steps today", steps))
+            .setContentTitle(title)
+            .setContentText(summary)
+            .setStyle(new NotificationCompat.BigTextStyle().bigText(detail.toString()))
             .setSmallIcon(R.drawable.ic_stat_steps)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setProgress(100, percent, false)
             .setOngoing(true)
             .setShowWhen(false)
+            .setOnlyAlertOnce(true)
             .setContentIntent(open)
             .build();
     }

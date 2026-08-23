@@ -16,6 +16,8 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 
+import com.gtftechnologies.zsteps.widget.StepWidgetProvider;
+
 import org.json.JSONObject;
 
 import java.util.Iterator;
@@ -152,6 +154,32 @@ public class StepCounterPlugin extends Plugin implements StepTracker.StepListene
         call.resolve(result);
     }
 
+    /**
+     * Push metrics the native layer cannot measure itself.
+     *
+     * Steps stay native-owned and are never writable from here. Water comes from
+     * the web UI and heart rate from a Bluetooth monitor, so both are handed
+     * down and cached for the widget and the ongoing notification, which have to
+     * render while no WebView is alive.
+     */
+    @PluginMethod
+    public void setMetrics(PluginCall call) {
+        long stepGoal = clamp(call.getInt("stepGoal", 0), 0, 500000);
+        long waterMl = clamp(call.getInt("waterMl", -1), -1, 50000);
+        long waterGoalMl = clamp(call.getInt("waterGoalMl", 0), 0, 50000);
+        int heartRate = (int) clamp(call.getInt("heartRate", 0), 0, 250);
+
+        tracker.store().setMetrics(stepGoal, waterMl, waterGoalMl, heartRate);
+        StepWidgetProvider.refresh(getContext());
+        call.resolve(status());
+    }
+
+    /** Bridge input is untrusted; clamp rather than trusting the caller. */
+    private long clamp(Integer value, long min, long max) {
+        if (value == null) return min;
+        return Math.max(min, Math.min(max, value.longValue()));
+    }
+
     // -------------------------------------------------------------- permissions
 
     @PluginMethod
@@ -247,6 +275,9 @@ public class StepCounterPlugin extends Plugin implements StepTracker.StepListene
         result.put("trackingStartDate", store.trackingStartDate());
         result.put("lastUpdated", store.lastUpdated());
         result.put("lastEvent", store.lastEvent());
+        result.put("calories", store.caloriesToday());
+        result.put("waterMl", store.waterMl());
+        result.put("heartRate", store.heartRate());
         return result;
     }
 

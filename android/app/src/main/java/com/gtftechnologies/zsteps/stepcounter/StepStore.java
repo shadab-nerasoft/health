@@ -49,6 +49,11 @@ public final class StepStore {
     private static final String KEY_BACKGROUND_SERVICE = "backgroundService";
     private static final String KEY_LAST_EVENT = "lastEvent";
     private static final String KEY_PERMISSION_REQUESTED = "permissionRequested";
+    private static final String KEY_STEP_GOAL = "stepGoal";
+    private static final String KEY_WATER_ML = "waterMl";
+    private static final String KEY_WATER_GOAL_ML = "waterGoalMl";
+    private static final String KEY_HEART_RATE = "heartRate";
+    private static final String KEY_HEART_RATE_AT = "heartRateAt";
 
     /**
      * Two wall-clock estimates of boot time drift by a second or so between
@@ -61,6 +66,18 @@ public final class StepStore {
      * rather than real walking, and is dropped instead of poisoning the day.
      */
     private static final long MAX_PLAUSIBLE_DELTA = 25000L;
+
+    /*
+     * Derived-metric constants, kept in step with lib/wellness/store.ts. The
+     * widget and the ongoing notification have to render calories and distance
+     * while no WebView exists, so the same arithmetic lives on both sides.
+     */
+    public static final double KCAL_PER_STEP = 0.04;
+    public static final double STRIDE_METERS = 0.762;
+    public static final int STEPS_PER_ACTIVE_MINUTE = 110;
+
+    /** A heart-rate reading older than this is stale and not worth showing. */
+    private static final long HEART_RATE_TTL_MS = 60 * 60 * 1000L;
 
     /** Days of per-day totals kept for offline backfill and sync. */
     private static final int HISTORY_DAYS = 120;
@@ -136,6 +153,56 @@ public final class StepStore {
 
     public synchronized void markPermissionRequested() {
         prefs.edit().putBoolean(KEY_PERMISSION_REQUESTED, true).apply();
+    }
+
+    /*
+     * Metrics the native layer cannot measure itself. Water is logged in the
+     * web UI and heart rate arrives over Bluetooth, so both are pushed down
+     * here and cached — otherwise the widget and notification could only ever
+     * show steps.
+     */
+    public synchronized void setMetrics(long stepGoal, long waterMl, long waterGoalMl, int heartRate) {
+        SharedPreferences.Editor editor = prefs.edit();
+        if (stepGoal > 0) editor.putLong(KEY_STEP_GOAL, stepGoal);
+        if (waterMl >= 0) editor.putLong(KEY_WATER_ML, waterMl);
+        if (waterGoalMl > 0) editor.putLong(KEY_WATER_GOAL_ML, waterGoalMl);
+        if (heartRate > 0) {
+            editor.putInt(KEY_HEART_RATE, heartRate);
+            editor.putLong(KEY_HEART_RATE_AT, System.currentTimeMillis());
+        }
+        editor.apply();
+    }
+
+    public synchronized long stepGoal() {
+        return prefs.getLong(KEY_STEP_GOAL, 10000L);
+    }
+
+    public synchronized long waterMl() {
+        return prefs.getLong(KEY_WATER_ML, 0L);
+    }
+
+    public synchronized long waterGoalMl() {
+        return prefs.getLong(KEY_WATER_GOAL_ML, 2500L);
+    }
+
+    /** Latest heart rate, or 0 when there is none or it has gone stale. */
+    public synchronized int heartRate() {
+        int value = prefs.getInt(KEY_HEART_RATE, 0);
+        if (value <= 0) return 0;
+        long age = System.currentTimeMillis() - prefs.getLong(KEY_HEART_RATE_AT, 0L);
+        return age <= HEART_RATE_TTL_MS ? value : 0;
+    }
+
+    public synchronized int caloriesToday() {
+        return (int) Math.round(todaySteps() * KCAL_PER_STEP);
+    }
+
+    public synchronized double distanceKmToday() {
+        return todaySteps() * STRIDE_METERS / 1000.0;
+    }
+
+    public synchronized int activeMinutesToday() {
+        return (int) Math.round((double) todaySteps() / STEPS_PER_ACTIVE_MINUTE);
     }
 
     public synchronized long sensorTotal() {

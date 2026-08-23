@@ -25,6 +25,10 @@ export type StepStatus = {
   lastUpdated: number
   /** Diagnostic label for the last reading, e.g. 'steps' or 'reboot-credited'. */
   lastEvent: string
+  /** Derived natively so the widget and notification can render with no WebView. */
+  calories?: number
+  waterMl?: number
+  heartRate?: number
 }
 
 export type StepReading = {
@@ -40,6 +44,12 @@ export interface StepCounterPlugin {
   getTodaySteps(): Promise<StepReading>
   getSteps(options: { date: string }): Promise<StepReading>
   getHistory(options?: { days?: number }): Promise<{ days: Record<string, number> }>
+  setMetrics(options: {
+    stepGoal?: number
+    waterMl?: number
+    waterGoalMl?: number
+    heartRate?: number
+  }): Promise<StepStatus>
   requestPermission(): Promise<StepStatus>
   requestNotificationPermission(): Promise<StepStatus>
   openSettings(): Promise<void>
@@ -91,6 +101,9 @@ class StepCounterWeb implements StepCounterPlugin {
   }
   async getHistory() {
     return { days: {} as Record<string, number> }
+  }
+  async setMetrics() {
+    return unavailable
   }
   async requestPermission() {
     return unavailable

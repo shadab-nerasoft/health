@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo } from 'reac
 import { useWellness } from '@/hooks/use-wellness'
 import { useStepCounter, type StepCounterStatus, type StepSource } from '@/hooks/use-step-counter'
 import { useStepSync, type SyncState } from '@/hooks/use-step-sync'
-import { isNativeApp } from '@/services/step-counter'
+import { isNativeApp, pushMetrics } from '@/services/step-counter'
 import { useCloudSync, type CloudState } from '@/hooks/use-cloud-sync'
 
 type Wellness = ReturnType<typeof useWellness>
@@ -66,6 +66,18 @@ export function TrackingProvider({ children }: { children: React.ReactNode }) {
     if (!ready || today.steps <= 0) return
     record({ [today.date]: today.steps })
   }, [ready, today.date, today.steps, record])
+
+  // Keep the widget and the ongoing notification current. Native owns steps;
+  // water, the goal and heart rate only exist up here, so they are pushed down
+  // whenever they change.
+  useEffect(() => {
+    if (!ready) return
+    void pushMetrics({
+      stepGoal: state.goals.steps,
+      waterMl: today.waterMl,
+      waterGoalMl: state.goals.waterMl,
+    })
+  }, [ready, state.goals.steps, state.goals.waterMl, today.waterMl])
 
   const counter = useStepCounter({
     paused: state.motionPaused,

@@ -7,5 +7,8 @@
 
     <string name="widget_steps_today">STEPS TODAY</string>
     <string name="widget_no_data">Open ZSTEPS to start</string>
-    <string name="widget_description">Step count and goal progress</string>
+    <string name="widget_description">Steps, calories, water and heart rate</string>
+    <string name="widget_calories">KCAL</string>
+    <string name="widget_water">WATER</string>
+    <string name="widget_heart">BPM</string>
 </resources>

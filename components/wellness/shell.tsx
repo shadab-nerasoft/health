@@ -18,6 +18,7 @@ import {
   Moon,
   More,
   Notification,
+  MobileProgramming,
   Setting2,
   Setting4,
   Sun1,
@@ -36,6 +37,7 @@ import { AlarmRingingModal } from './alarm-ringing-modal'
 import { FloatingAlarmButton } from './floating-alarm-button'
 import { useAlarmMonitor } from '@/lib/wellness/alarm-store'
 import { useNativeNotifications } from '@/hooks/use-native-notifications'
+import { isNativeApp } from '@/services/step-counter'
 import { Timer1 } from 'iconsax-react'
 
 type NavLinkDef = { href: string; label: string; icon: ComponentType<any> }
@@ -281,6 +283,16 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
 
         <div className="sidebar-bottom">
           <ThemeToggle collapsed={collapsed} />
+          {/* Web only: pointless inside the Android app, which is the download. */}
+          {!isNativeApp() && (
+            <NavLink
+              href="/download"
+              label="Get the app"
+              icon={MobileProgramming}
+              active={pathname === '/download'}
+              collapsed={collapsed}
+            />
+          )}
           <NavLink href="/profile" label="Settings" icon={Setting2} active={pathname === '/settings'} collapsed={collapsed} />
           <AnimatePresence initial={false}>
             {!collapsed && (
@@ -344,6 +356,16 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
                 ))}
               </nav>
               <div className="sidebar-bottom" style={{ marginTop: 'auto', paddingTop: 16 }}>
+                {/* Web only: inside the Android app, this *is* the download. */}
+                {!isNativeApp() && (
+                  <NavLink
+                    href="/download"
+                    label="Get the app"
+                    icon={MobileProgramming}
+                    active={pathname === '/download'}
+                    collapsed={false}
+                  />
+                )}
                 <ThemeToggle collapsed={false} />
               </div>
             </motion.aside>

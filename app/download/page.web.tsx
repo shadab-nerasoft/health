@@ -15,7 +15,13 @@ export const metadata: Metadata = {
   description: 'Download the ZSTEPS Android app for step tracking that keeps counting with the screen off.',
 }
 
-const apkUrl = process.env.NEXT_PUBLIC_ANDROID_APK_URL ?? ''
+/**
+ * Defaults to the copy served from this site (public/downloads/zsteps.apk), so
+ * the button works as soon as the site is deployed. Override with
+ * NEXT_PUBLIC_ANDROID_APK_URL to serve it from a release or object store
+ * instead, which is what you want once the file gets large or versioned.
+ */
+const apkUrl = process.env.NEXT_PUBLIC_ANDROID_APK_URL || '/downloads/zsteps.apk'
 const version = process.env.NEXT_PUBLIC_ANDROID_VERSION ?? '1.0'
 
 const features = [
@@ -50,16 +56,9 @@ export default function DownloadPage() {
           Step tracking that does not stop when your screen does. Version {version}.
         </p>
 
-        {apkUrl ? (
-          <a className="download-button" href={apkUrl} download>
-            Download APK
-          </a>
-        ) : (
-          <p className="download-pending">
-            The download link is not configured yet. Set <code>NEXT_PUBLIC_ANDROID_APK_URL</code> to the hosted
-            APK and redeploy.
-          </p>
-        )}
+        <a className="download-button" href={apkUrl} download="zsteps.apk">
+          Download APK
+        </a>
 
         <Link href="/" className="download-secondary">
           Or keep using the web app

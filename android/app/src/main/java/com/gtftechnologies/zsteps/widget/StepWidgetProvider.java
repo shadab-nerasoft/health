@@ -60,16 +60,25 @@ public class StepWidgetProvider extends AppWidgetProvider {
     private RemoteViews buildViews(Context context) {
         StepStore store = new StepStore(context);
         long steps = store.todaySteps();
-
-        // Goal is mirrored from the web store; 10,000 matches the app default
-        // until the user changes it.
-        long goal = 10000;
+        long goal = store.stepGoal();
         int percent = goal > 0 ? (int) Math.min(100, (steps * 100) / goal) : 0;
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_steps);
         views.setTextViewText(R.id.widget_steps, String.format(Locale.getDefault(), "%,d", steps));
-        views.setTextViewText(R.id.widget_caption, percent + "% of " + String.format(Locale.getDefault(), "%,d", goal));
+        views.setTextViewText(
+            R.id.widget_caption,
+            percent + "% of " + String.format(Locale.getDefault(), "%,d", goal));
         views.setProgressBar(R.id.widget_progress, 100, percent, false);
+
+        // Calories are derived natively from the same constant the web store
+        // uses, so the widget agrees with the dashboard without asking it.
+        views.setTextViewText(
+            R.id.widget_calories, String.format(Locale.getDefault(), "%,d", store.caloriesToday()));
+        views.setTextViewText(
+            R.id.widget_water, String.format(Locale.getDefault(), "%.1f L", store.waterMl() / 1000.0));
+
+        int heartRate = store.heartRate();
+        views.setTextViewText(R.id.widget_heart, heartRate > 0 ? String.valueOf(heartRate) : "—");
 
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) flags |= PendingIntent.FLAG_IMMUTABLE;

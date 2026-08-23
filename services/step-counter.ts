@@ -69,6 +69,26 @@ export async function setBackgroundTracking(enabled: boolean): Promise<StepStatu
   return StepCounter.setBackgroundService({ enabled })
 }
 
+/**
+ * Hand the native layer the metrics it cannot measure: the step goal, water
+ * logged today, and the latest heart rate. The widget and the ongoing
+ * notification read these straight from storage, so they stay accurate with the
+ * app closed.
+ */
+export async function pushMetrics(metrics: {
+  stepGoal?: number
+  waterMl?: number
+  waterGoalMl?: number
+  heartRate?: number
+}) {
+  if (!isNativeApp()) return
+  try {
+    await StepCounter.setMetrics(metrics)
+  } catch {
+    // Widget freshness is not worth surfacing an error to the user over.
+  }
+}
+
 export async function openAppSettings() {
   if (!isNativeApp()) return
   await StepCounter.openSettings()

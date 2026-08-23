@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Widget layout. RemoteViews only supports a fixed set of views, so this is
-  deliberately plain: no ConstraintLayout, no custom views, no vector
-  backgrounds beyond a shape drawable.
+  Widget layout: steps as the headline, then calories, water and heart rate.
 
-  Colours come from the system dynamic palette on Android 12+ so the widget
-  matches the user's home screen rather than fighting it.
+  RemoteViews only supports a fixed set of views, so this is deliberately plain
+  — LinearLayout, TextView, ProgressBar. No ConstraintLayout, no custom views.
+
+  Everything rendered here is read from SharedPreferences by the widget
+  provider, so it stays correct with the app closed and no WebView alive.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
@@ -20,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/widget_steps_today"
-        android:textSize="11sp"
+        android:textSize="10sp"
         android:textStyle="bold"
         android:letterSpacing="0.08"
         android:textColor="@color/widget_on_surface_variant" />
@@ -29,9 +30,8 @@
         android:id="@+id/widget_steps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
         android:text="0"
-        android:textSize="30sp"
+        android:textSize="28sp"
         android:textColor="@color/widget_on_surface" />
 
     <ProgressBar
@@ -39,7 +39,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="6dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:max="100"
         android:progress="0" />
 
@@ -47,8 +47,89 @@
         android:id="@+id/widget_caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="4dp"
         android:text="@string/widget_no_data"
-        android:textSize="12sp"
+        android:textSize="11sp"
         android:textColor="@color/widget_on_surface_variant" />
+
+    <!-- Calories / water / heart rate, side by side under the step total. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/widget_calories"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06"
+                android:textColor="@color/widget_on_surface_variant" />
+
+            <TextView
+                android:id="@+id/widget_calories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="15sp"
+                android:textColor="@color/widget_on_surface" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/widget_water"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06"
+                android:textColor="@color/widget_on_surface_variant" />
+
+            <TextView
+                android:id="@+id/widget_water"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0 L"
+                android:textSize="15sp"
+                android:textColor="@color/widget_on_surface" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/widget_heart"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06"
+                android:textColor="@color/widget_on_surface_variant" />
+
+            <TextView
+                android:id="@+id/widget_heart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="—"
+                android:textSize="15sp"
+                android:textColor="@color/widget_on_surface" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

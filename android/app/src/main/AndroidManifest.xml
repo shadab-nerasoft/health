@@ -52,9 +52,14 @@
             android:foregroundServiceType="health" />
 
         <!-- Home screen widget. Reads the same native step store the app does. -->
+        <!--
+            Must be exported: the launcher lives in another process and can only
+            discover and bind a widget provider that is. With exported="false"
+            the widget never appears in the picker at all.
+        -->
         <receiver
             android:name=".widget.StepWidgetProvider"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.gtftechnologies.zsteps.WIDGET_REFRESH" />
