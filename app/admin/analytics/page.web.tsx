@@ -1,20 +1,25 @@
-import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { requireAdmin } from '@/lib/admin'
+import type { Metadata } from 'next'
+import { isAdmin } from '@/lib/admin'
 import { getAnalytics } from '@/lib/health/analytics'
+import { signOutAsAdmin } from '../actions'
 
 /**
  * Cross-user analytics.
  *
- * A server component on purpose: the service-role read and the admin check both
- * stay on the server, and no user data is shipped to the browser beyond what is
- * rendered. Non-admins get a 404 rather than a "forbidden" page, so the route's
- * existence is not advertised.
+ * A server component on purpose: the PIN session check and the service-role
+ * read both stay on the server. Without a valid admin session the analytics
+ * query never runs, so an unauthorised visitor receives no user data at all —
+ * not hidden data, no data.
  *
- * Web only — this route is a `.tsx` page but lives outside the app shell, and
- * the Capacitor export drops it along with everything else that needs a server.
+ * Web only (`page.web.tsx`), so it never ships inside the Android app.
  */
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'User analytics — ZSTEPS',
+  robots: { index: false, follow: false },
+}
 
 function formatNumber(value: number) {
   return value.toLocaleString('en-US')
@@ -25,8 +30,23 @@ export default async function AdminAnalyticsPage({
 }: {
   searchParams: Promise<{ range?: string }>
 }) {
-  const admin = await requireAdmin()
-  if (!admin) notFound()
+  // Checked before any query runs.
+  if (!(await isAdmin())) {
+    return (
+      <main className="admin-shell admin-gate-shell">
+        <div className="admin-gate">
+          <h1>You don&apos;t have permission to open this</h1>
+          <p className="subheading">This page is for the app administrator only.</p>
+          <Link href="/admin" className="download-button">
+            Enter admin PIN
+          </Link>
+          <Link href="/" className="download-secondary">
+            Back to ZSTEPS
+          </Link>
+        </div>
+      </main>
+    )
+  }
 
   const params = await searchParams
   const requested = Number(params.range)
@@ -53,9 +73,7 @@ export default async function AdminAnalyticsPage({
         <div>
           <p className="eyebrow">Admin</p>
           <h1>User analytics</h1>
-          <p className="subheading">
-            Signed in as {admin.email} · last {rangeDays} days
-          </p>
+          <p className="subheading">Last {rangeDays} days across all users</p>
         </div>
         <div className="admin-ranges">
           {[7, 30, 90].map((days) => (
@@ -67,6 +85,11 @@ export default async function AdminAnalyticsPage({
               {days}D
             </Link>
           ))}
+          <form action={signOutAsAdmin}>
+            <button type="submit" className="chip-button">
+              Lock
+            </button>
+          </form>
         </div>
       </div>
 
