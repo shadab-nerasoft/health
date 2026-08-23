@@ -38,6 +38,16 @@ const nextConfig = {
         async headers() {
           return [
             {
+              // Without an explicit type some browsers try to render the APK
+              // instead of saving it, which surfaces as a failed download.
+              source: '/downloads/zsteps.apk',
+              headers: [
+                { key: 'Content-Type', value: 'application/vnd.android.package-archive' },
+                { key: 'Content-Disposition', value: 'attachment; filename="zsteps.apk"' },
+                { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+              ],
+            },
+            {
               source: '/api/:path*',
               headers: [
                 { key: 'Access-Control-Allow-Origin', value: 'https://localhost' },

@@ -23,5 +23,7 @@ android/app/src/main/assets/public/
 android/app/src/main/assets/capacitor.config.json
 android/app/google-services.json
 
-# The APK the website offers for download is a build artifact, not source.
-public/downloads/*.apk
+# public/downloads/zsteps.apk is intentionally COMMITTED: Vercel deploys from
+# git, so an ignored file is simply absent from the site and /download 404s.
+# Host it externally and set NEXT_PUBLIC_ANDROID_APK_URL to keep binaries out
+# of the repo.
