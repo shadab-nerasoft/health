@@ -5,6 +5,10 @@ import { InstallPrompt } from '@/components/wellness/install-prompt'
 import { SplashScreen } from '@/components/wellness/splash-screen'
 import { ServiceWorkerRegister } from '@/components/wellness/service-worker-register'
 import './globals.css'
+import './material3.css'
+import './m3-components.css'
+import './lock.css'
+import './web-pages.css'
 
 const sansFont = DM_Sans({
   subsets: ['latin'],

@@ -8,6 +8,7 @@ import { DataPanel } from '@/components/wellness/data-panel'
 import { NotificationPanel } from '@/components/wellness/notification-panel'
 import { useWellness } from '@/hooks/use-wellness'
 import { percent, profileInitial, type ActivityLevel } from '@/lib/wellness/store'
+import { LockSettings } from '@/components/wellness/lock-settings'
 
 const activityOptions: { value: ActivityLevel; label: string }[] = [
   { value: 'light', label: 'Light' },
@@ -204,6 +205,10 @@ export default function ProfilePage() {
       <StaggerItem>
         <DataPanel />
       </StaggerItem>
-    </Stagger>
+    
+        <StaggerItem style={{ gridColumn: '1 / -1' }}>
+          <LockSettings />
+        </StaggerItem>
+      </Stagger>
   )
 }

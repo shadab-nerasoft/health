@@ -6,11 +6,20 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build:mobile": "node scripts/build-mobile.mjs",
+    "sync:android": "node scripts/build-mobile.mjs && npx cap sync android",
+    "open:android": "npx cap open android",
+    "android": "node scripts/build-mobile.mjs && npx cap sync android && npx cap open android"
   },
   "dependencies": {
     "@ai-sdk/groq": "^4.0.28",
+    "@aparajita/capacitor-biometric-auth": "^10.0.0",
     "@base-ui/react": "^1.5.0",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/push-notifications": "^8.1.2",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "@vercel/analytics": "1.6.1",
@@ -32,6 +41,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24",
     "@types/react": "^19",

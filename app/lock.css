@@ -1,0 +1,153 @@
+/**
+ * App lock screen.
+ *
+ * Sits above everything at z-index 100 and uses the M3 surface tokens, so it
+ * follows dynamic colour like the rest of the app.
+ */
+
+.lock-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 32px 24px calc(32px + env(safe-area-inset-bottom));
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  overflow-y: auto;
+}
+
+.lock-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.lock-brand strong {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.lock-mark {
+  display: flex;
+  height: 44px;
+  width: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--md-shape-md);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+
+.lock-title {
+  margin: 0 0 20px;
+  font-size: 15px;
+  color: var(--md-on-surface-variant);
+}
+
+.lock-dots {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 36px;
+  min-height: 16px;
+  align-items: center;
+}
+
+.lock-dots i {
+  display: block;
+  height: 14px;
+  width: 14px;
+  border-radius: var(--md-shape-full);
+  border: 2px solid var(--md-outline);
+  background: transparent;
+  transition: background-color var(--md-duration-short) var(--md-ease-emphasized);
+}
+
+.lock-dots i.filled {
+  background: var(--md-primary);
+  border-color: var(--md-primary);
+}
+
+.lock-dots.error i {
+  border-color: var(--md-error);
+}
+
+.lock-dots.error i.filled {
+  background: var(--md-error);
+}
+
+.lock-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  gap: 18px;
+}
+
+.lock-key {
+  height: 72px;
+  width: 72px;
+  border: none;
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+  font-size: 26px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color var(--md-duration-short) var(--md-ease-standard);
+}
+
+.lock-key:hover:not(:disabled) {
+  background: var(--md-surface-container-highest);
+}
+
+.lock-key.empty {
+  background: transparent;
+  pointer-events: none;
+}
+
+.lock-key:disabled:not(.empty) {
+  opacity: 0.38;
+}
+
+.lock-biometric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  padding: 12px 22px;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-shape-full);
+  background: transparent;
+  color: var(--md-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.lock-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 32px;
+  font-size: 12px;
+  color: var(--md-on-surface-variant);
+}
+
+@media (max-height: 680px) {
+  .lock-pad {
+    grid-template-columns: repeat(3, 62px);
+    gap: 14px;
+  }
+  .lock-key {
+    height: 62px;
+    width: 62px;
+    font-size: 22px;
+  }
+  .lock-dots {
+    margin-bottom: 24px;
+  }
+}

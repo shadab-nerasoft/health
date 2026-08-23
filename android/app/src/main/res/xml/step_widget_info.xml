@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  updatePeriodMillis is 30 minutes, the shortest the system honours. It is a
+  fallback only: the app broadcasts a refresh whenever the step total actually
+  changes, so the widget is normally current long before this fires.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_steps"
+    android:previewLayout="@layout/widget_steps"
+    android:resizeMode="horizontal|vertical"
+    android:description="@string/widget_description"
+    android:widgetCategory="home_screen" />

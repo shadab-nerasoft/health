@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { preflight } from '@/lib/cors'
 
 export async function POST(req: Request) {
   try {
@@ -44,4 +45,9 @@ export async function POST(req: Request) {
     console.warn('Error in subscribe route:', error)
     return NextResponse.json({ success: true, mode: 'fallback' })
   }
+}
+
+/** Preflight for the Android WebView origin. */
+export function OPTIONS() {
+  return preflight()
 }

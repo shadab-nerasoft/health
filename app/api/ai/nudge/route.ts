@@ -1,6 +1,7 @@
 import { generateText } from 'ai'
 import { z } from 'zod'
 import { zstepsModel } from '@/lib/ai/groq'
+import { preflight } from '@/lib/cors'
 
 const nudgeContextSchema = z.object({
   primary_goal: z.enum(['weight_loss', 'weight_gain', 'maintenance', 'habit']).default('weight_loss'),
@@ -86,4 +87,9 @@ Generate 1 notification JSON:`,
       { status: 200 }
     )
   }
+}
+
+/** Preflight for the Android WebView origin. */
+export function OPTIONS() {
+  return preflight()
 }

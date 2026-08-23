@@ -1,6 +1,7 @@
 import { generateText } from 'ai'
 import { z } from 'zod'
 import { zstepsModel } from '@/lib/ai/groq'
+import { preflight } from '@/lib/cors'
 
 const contextSchema = z
   .object({
@@ -39,4 +40,9 @@ export async function POST(request: Request) {
   } catch {
     return Response.json({ error: 'The coach could not respond right now. Please try again.' }, { status: 502 })
   }
+}
+
+/** Preflight for the Android WebView origin. */
+export function OPTIONS() {
+  return preflight()
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { apiUrl } from '@/lib/api-base'
 
 const DEFAULT_VAPID_KEY =
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
@@ -116,7 +117,7 @@ export function useNotifications() {
             applicationServerKey: urlBase64ToUint8Array(DEFAULT_VAPID_KEY),
           })
 
-          await fetch('/api/push/subscribe', {
+          await fetch(apiUrl('/api/push/subscribe'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(sub),
@@ -146,7 +147,7 @@ export function useNotifications() {
       if (subscription && typeof subscription.unsubscribe === 'function') {
         const { endpoint } = subscription
         await subscription.unsubscribe()
-        await fetch('/api/push/unsubscribe', {
+        await fetch(apiUrl('/api/push/unsubscribe'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ endpoint }),

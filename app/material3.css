@@ -1,0 +1,501 @@
+/**
+ * Material 3 design tokens.
+ *
+ * The tonal palettes are generated in oklch rather than hard-coded. In M3 a
+ * "tone" is a perceptual lightness step, and oklch's L axis is perceptually
+ * uniform, so tone N maps to L = N%. That means an entire palette is described
+ * by two numbers — a hue and a chroma — and every one of the 13 tones falls out
+ * of them.
+ *
+ * The payoff is Material You: to adopt the user's wallpaper colour, the native
+ * layer only has to set --m3-hue-primary and --m3-chroma-primary, and the whole
+ * system — containers, surfaces, outlines, light and dark — recomputes. No
+ * palette generation in JavaScript, no 78 hard-coded hex values.
+ *
+ * This approximates M3's HCT colour space with oklch. They are not identical,
+ * but they agree closely enough that tones read correctly and contrast pairs
+ * hold. See dynamic-color.ts for how the seed reaches these variables.
+ */
+
+:root {
+  /* Seed: #a855f7, the existing ZSTEPS purple, expressed as hue + chroma. */
+  --m3-hue-primary: 303;
+  --m3-chroma-primary: 0.23;
+
+  /* M3 derives the rest of the scheme from the seed hue. */
+  --m3-hue-secondary: var(--m3-hue-primary);
+  --m3-chroma-secondary: 0.06;
+  --m3-hue-tertiary: calc(var(--m3-hue-primary) + 60);
+  --m3-chroma-tertiary: 0.11;
+  --m3-hue-neutral: var(--m3-hue-primary);
+  --m3-chroma-neutral: 0.006;
+  --m3-chroma-neutral-variant: 0.018;
+  --m3-hue-error: 27;
+  --m3-chroma-error: 0.2;
+
+  /* ---------------------------------------------------------- tonal palettes */
+
+  --m3-primary-0: oklch(0% 0 0);
+  --m3-primary-10: oklch(10% calc(var(--m3-chroma-primary) * 0.55) var(--m3-hue-primary));
+  --m3-primary-20: oklch(20% calc(var(--m3-chroma-primary) * 0.7) var(--m3-hue-primary));
+  --m3-primary-30: oklch(30% calc(var(--m3-chroma-primary) * 0.85) var(--m3-hue-primary));
+  --m3-primary-40: oklch(40% var(--m3-chroma-primary) var(--m3-hue-primary));
+  --m3-primary-50: oklch(50% var(--m3-chroma-primary) var(--m3-hue-primary));
+  --m3-primary-60: oklch(60% var(--m3-chroma-primary) var(--m3-hue-primary));
+  --m3-primary-70: oklch(70% calc(var(--m3-chroma-primary) * 0.9) var(--m3-hue-primary));
+  --m3-primary-80: oklch(80% calc(var(--m3-chroma-primary) * 0.7) var(--m3-hue-primary));
+  --m3-primary-90: oklch(90% calc(var(--m3-chroma-primary) * 0.4) var(--m3-hue-primary));
+  --m3-primary-95: oklch(95% calc(var(--m3-chroma-primary) * 0.22) var(--m3-hue-primary));
+  --m3-primary-99: oklch(99% calc(var(--m3-chroma-primary) * 0.08) var(--m3-hue-primary));
+  --m3-primary-100: oklch(100% 0 0);
+
+  --m3-secondary-10: oklch(10% calc(var(--m3-chroma-secondary) * 0.7) var(--m3-hue-secondary));
+  --m3-secondary-20: oklch(20% calc(var(--m3-chroma-secondary) * 0.85) var(--m3-hue-secondary));
+  --m3-secondary-30: oklch(30% var(--m3-chroma-secondary) var(--m3-hue-secondary));
+  --m3-secondary-40: oklch(40% var(--m3-chroma-secondary) var(--m3-hue-secondary));
+  --m3-secondary-80: oklch(80% calc(var(--m3-chroma-secondary) * 0.8) var(--m3-hue-secondary));
+  --m3-secondary-90: oklch(90% calc(var(--m3-chroma-secondary) * 0.5) var(--m3-hue-secondary));
+  --m3-secondary-100: oklch(100% 0 0);
+
+  --m3-tertiary-10: oklch(10% calc(var(--m3-chroma-tertiary) * 0.7) var(--m3-hue-tertiary));
+  --m3-tertiary-20: oklch(20% calc(var(--m3-chroma-tertiary) * 0.85) var(--m3-hue-tertiary));
+  --m3-tertiary-30: oklch(30% var(--m3-chroma-tertiary) var(--m3-hue-tertiary));
+  --m3-tertiary-40: oklch(40% var(--m3-chroma-tertiary) var(--m3-hue-tertiary));
+  --m3-tertiary-80: oklch(80% calc(var(--m3-chroma-tertiary) * 0.8) var(--m3-hue-tertiary));
+  --m3-tertiary-90: oklch(90% calc(var(--m3-chroma-tertiary) * 0.5) var(--m3-hue-tertiary));
+  --m3-tertiary-100: oklch(100% 0 0);
+
+  --m3-error-10: oklch(10% calc(var(--m3-chroma-error) * 0.6) var(--m3-hue-error));
+  --m3-error-20: oklch(20% calc(var(--m3-chroma-error) * 0.8) var(--m3-hue-error));
+  --m3-error-30: oklch(30% calc(var(--m3-chroma-error) * 0.9) var(--m3-hue-error));
+  --m3-error-40: oklch(40% var(--m3-chroma-error) var(--m3-hue-error));
+  --m3-error-80: oklch(80% calc(var(--m3-chroma-error) * 0.6) var(--m3-hue-error));
+  --m3-error-90: oklch(90% calc(var(--m3-chroma-error) * 0.35) var(--m3-hue-error));
+  --m3-error-100: oklch(100% 0 0);
+
+  --m3-neutral-4: oklch(4% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-6: oklch(6% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-10: oklch(10% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-12: oklch(12% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-17: oklch(17% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-20: oklch(20% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-22: oklch(22% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-24: oklch(24% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-80: oklch(80% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-87: oklch(87% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-90: oklch(90% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-92: oklch(92% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-94: oklch(94% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-96: oklch(96% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-98: oklch(98% var(--m3-chroma-neutral) var(--m3-hue-neutral));
+  --m3-neutral-100: oklch(100% 0 0);
+
+  --m3-nv-30: oklch(30% var(--m3-chroma-neutral-variant) var(--m3-hue-neutral));
+  --m3-nv-50: oklch(50% var(--m3-chroma-neutral-variant) var(--m3-hue-neutral));
+  --m3-nv-60: oklch(60% var(--m3-chroma-neutral-variant) var(--m3-hue-neutral));
+  --m3-nv-80: oklch(80% var(--m3-chroma-neutral-variant) var(--m3-hue-neutral));
+  --m3-nv-90: oklch(90% var(--m3-chroma-neutral-variant) var(--m3-hue-neutral));
+
+  /* ------------------------------------------------- fixed data palette */
+
+  /* Four distinguishable hues for metrics and charts. Deliberately NOT derived
+     from the seed, so they survive dynamic colour and stay legible in both
+     themes. Tuned to the same tonal logic as the M3 palettes above. */
+  --data-blue: oklch(58% 0.15 250);
+  --data-blue-container: oklch(92% 0.05 250);
+  --data-blue-on-container: oklch(32% 0.12 250);
+
+  --data-green: oklch(58% 0.13 155);
+  --data-green-container: oklch(92% 0.05 155);
+  --data-green-on-container: oklch(32% 0.1 155);
+
+  --data-amber: oklch(66% 0.15 62);
+  --data-amber-container: oklch(93% 0.06 62);
+  --data-amber-on-container: oklch(36% 0.11 62);
+
+  --data-violet: oklch(58% 0.16 300);
+  --data-violet-container: oklch(92% 0.06 300);
+  --data-violet-on-container: oklch(33% 0.13 300);
+
+  /* ------------------------------------------------- semantic roles: light */
+
+  --md-primary: var(--m3-primary-40);
+  --md-on-primary: var(--m3-primary-100);
+  --md-primary-container: var(--m3-primary-90);
+  --md-on-primary-container: var(--m3-primary-10);
+
+  --md-secondary: var(--m3-secondary-40);
+  --md-on-secondary: var(--m3-secondary-100);
+  --md-secondary-container: var(--m3-secondary-90);
+  --md-on-secondary-container: var(--m3-secondary-10);
+
+  --md-tertiary: var(--m3-tertiary-40);
+  --md-on-tertiary: var(--m3-tertiary-100);
+  --md-tertiary-container: var(--m3-tertiary-90);
+  --md-on-tertiary-container: var(--m3-tertiary-10);
+
+  --md-error: var(--m3-error-40);
+  --md-on-error: var(--m3-error-100);
+  --md-error-container: var(--m3-error-90);
+  --md-on-error-container: var(--m3-error-10);
+
+  --md-surface: var(--m3-neutral-98);
+  --md-on-surface: var(--m3-neutral-10);
+  --md-surface-variant: var(--m3-nv-90);
+  --md-on-surface-variant: var(--m3-nv-30);
+  --md-surface-dim: var(--m3-neutral-87);
+  --md-surface-bright: var(--m3-neutral-98);
+
+  --md-surface-container-lowest: var(--m3-neutral-100);
+  --md-surface-container-low: var(--m3-neutral-96);
+  --md-surface-container: var(--m3-neutral-94);
+  --md-surface-container-high: var(--m3-neutral-92);
+  --md-surface-container-highest: var(--m3-neutral-90);
+
+  --md-outline: var(--m3-nv-50);
+  --md-outline-variant: var(--m3-nv-80);
+  --md-scrim: oklch(0% 0 0);
+  --md-inverse-surface: var(--m3-neutral-20);
+  --md-inverse-on-surface: var(--m3-neutral-96);
+  --md-inverse-primary: var(--m3-primary-80);
+
+  /* ------------------------------------------------------------ shape scale */
+
+  --md-shape-xs: 4px;
+  --md-shape-sm: 8px;
+  --md-shape-md: 12px;
+  --md-shape-lg: 16px;
+  --md-shape-xl: 28px;
+  --md-shape-full: 999px;
+
+  /* ---------------------------------------------------------------- motion */
+
+  /* M3 expressive easing. "Emphasized" overshoots slightly; it is what makes
+     Material motion feel driven rather than merely animated. */
+  --md-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-ease-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-ease-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --md-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-ease-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-ease-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+
+  --md-duration-short: 150ms;
+  --md-duration-medium: 300ms;
+  --md-duration-long: 450ms;
+  --md-duration-extra-long: 700ms;
+
+  /* --------------------------------------------------------- state layers */
+
+  /* M3 expresses hover/focus/press as a translucent overlay of the content
+     colour, rather than as a separate background colour per state. */
+  --md-state-hover: 0.08;
+  --md-state-focus: 0.1;
+  --md-state-press: 0.1;
+
+  /* ------------------------------------------------------------- elevation */
+
+  /* M3 leans on tonal surfaces over shadow; these stay deliberately soft. */
+  --md-elevation-0: none;
+  --md-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.08);
+  --md-elevation-2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.1);
+  --md-elevation-3: 0 4px 8px 3px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --md-elevation-4: 0 6px 10px 4px rgba(0, 0, 0, 0.1), 0 2px 3px rgba(0, 0, 0, 0.3);
+  --md-elevation-5: 0 8px 12px 6px rgba(0, 0, 0, 0.12), 0 4px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ------------------------------------------------- semantic roles: dark */
+
+.dark {
+  --md-primary: var(--m3-primary-80);
+  --md-on-primary: var(--m3-primary-20);
+  --md-primary-container: var(--m3-primary-30);
+  --md-on-primary-container: var(--m3-primary-90);
+
+  --md-secondary: var(--m3-secondary-80);
+  --md-on-secondary: var(--m3-secondary-20);
+  --md-secondary-container: var(--m3-secondary-30);
+  --md-on-secondary-container: var(--m3-secondary-90);
+
+  --md-tertiary: var(--m3-tertiary-80);
+  --md-on-tertiary: var(--m3-tertiary-20);
+  --md-tertiary-container: var(--m3-tertiary-30);
+  --md-on-tertiary-container: var(--m3-tertiary-90);
+
+  --md-error: var(--m3-error-80);
+  --md-on-error: var(--m3-error-20);
+  --md-error-container: var(--m3-error-30);
+  --md-on-error-container: var(--m3-error-90);
+
+  --md-surface: var(--m3-neutral-6);
+  --md-on-surface: var(--m3-neutral-90);
+  --md-surface-variant: var(--m3-nv-30);
+  --md-on-surface-variant: var(--m3-nv-80);
+  --md-surface-dim: var(--m3-neutral-6);
+  --md-surface-bright: var(--m3-neutral-24);
+
+  --md-surface-container-lowest: var(--m3-neutral-4);
+  --md-surface-container-low: var(--m3-neutral-10);
+  --md-surface-container: var(--m3-neutral-12);
+  --md-surface-container-high: var(--m3-neutral-17);
+  --md-surface-container-highest: var(--m3-neutral-22);
+
+  --data-blue: oklch(78% 0.12 250);
+  --data-blue-container: oklch(30% 0.08 250);
+  --data-blue-on-container: oklch(88% 0.08 250);
+
+  --data-green: oklch(78% 0.11 155);
+  --data-green-container: oklch(29% 0.07 155);
+  --data-green-on-container: oklch(88% 0.08 155);
+
+  --data-amber: oklch(82% 0.12 62);
+  --data-amber-container: oklch(31% 0.08 62);
+  --data-amber-on-container: oklch(90% 0.08 62);
+
+  --data-violet: oklch(78% 0.13 300);
+  --data-violet-container: oklch(30% 0.09 300);
+  --data-violet-on-container: oklch(89% 0.08 300);
+
+  --md-outline: var(--m3-nv-60);
+  --md-outline-variant: var(--m3-nv-30);
+  --md-inverse-surface: var(--m3-neutral-90);
+  --md-inverse-on-surface: var(--m3-neutral-20);
+  --md-inverse-primary: var(--m3-primary-40);
+
+  /* Shadows read as noise on dark tonal surfaces; elevation is carried by the
+     surface-container tones instead. */
+  --md-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --md-elevation-2: 0 2px 6px rgba(0, 0, 0, 0.55);
+  --md-elevation-3: 0 4px 10px rgba(0, 0, 0, 0.6);
+  --md-elevation-4: 0 6px 14px rgba(0, 0, 0, 0.65);
+  --md-elevation-5: 0 8px 20px rgba(0, 0, 0, 0.7);
+}
+
+/* ==========================================================================
+   Legacy token bridge
+   --------------------------------------------------------------------------
+   The app's 2,700 lines of CSS are already driven entirely by custom
+   properties. Rather than rewrite every rule, the existing token names are
+   re-pointed at M3 roles: every surface, border and accent in the app becomes
+   M3-correct at once, in both themes, and keeps working if a rule is missed.
+   ========================================================================== */
+
+:root,
+.dark {
+  --background: var(--md-surface);
+  --foreground: var(--md-on-surface);
+  --card: var(--md-surface-container-low);
+  --card-foreground: var(--md-on-surface);
+  --muted-foreground: var(--md-on-surface-variant);
+  --text-tertiary: var(--md-outline);
+  --border: var(--md-outline-variant);
+  --border-strong: var(--md-outline);
+  --primary: var(--md-primary);
+  --primary-hover: var(--md-primary);
+  --primary-active: var(--md-primary);
+  --primary-light: var(--md-primary-container);
+  --ink: var(--md-on-surface);
+  --surface-hover: var(--md-surface-container);
+  --overlay: color-mix(in oklab, var(--md-scrim) 40%, transparent);
+  --bottom-nav-bg: color-mix(in oklab, var(--md-surface-container) 92%, transparent);
+  --ring-track: var(--md-surface-container-highest);
+  --progress-track: var(--md-surface-container-highest);
+  --dot-track: var(--md-outline-variant);
+  --avatar-bg: var(--md-primary-container);
+  --avatar-fg: var(--md-on-primary-container);
+  --recommendation-fg: var(--md-tertiary);
+  --success: var(--md-tertiary);
+  --danger: var(--md-error);
+
+  /* Data colours stay FIXED and independent of dynamic colour. Collapsing them
+     onto the wallpaper palette makes every metric card the same hue, which is
+     both ugly and unreadable — you can no longer tell steps from calories at a
+     glance. Google's own health apps do the same: Material You tints the
+     chrome, data keeps its own semantics. */
+  --accent-purple: var(--data-violet);
+  --accent-purple-light: var(--data-violet-container);
+  --accent-purple-dark: var(--data-violet-on-container);
+  --accent-blue: var(--data-blue);
+  --accent-lavender: var(--data-violet);
+  --accent-green: var(--data-green);
+  --accent-peach: var(--data-amber);
+
+  --tint-blue: var(--data-blue-container);
+  --tint-lavender: var(--data-violet-container);
+  --tint-green: var(--data-green-container);
+  --tint-peach: var(--data-amber-container);
+  --tint-peach-soft: var(--data-amber-container);
+
+  --chart-bar: var(--md-surface-container-highest);
+  --chart-bar-strong: var(--md-primary);
+  --nav-active: var(--md-primary);
+
+  --shadow-xs: var(--md-elevation-1);
+  --shadow-sm: var(--md-elevation-1);
+  --shadow-md: var(--md-elevation-2);
+  --shadow-lg: var(--md-elevation-3);
+  --shadow-drawer: var(--md-elevation-5);
+  --shadow-nav: var(--md-elevation-2);
+}
+
+/* ==========================================================================
+   M3 component refinements
+   ========================================================================== */
+
+/* Cards: tonal surfaces, M3 large shape, no heavy shadow. */
+.panel,
+.metric-card,
+.hero-card,
+.sensor-panel,
+.insight-card,
+.recommendation,
+.empty-state {
+  border-radius: var(--md-shape-lg);
+  border: 1px solid var(--md-outline-variant);
+  background: var(--md-surface-container-low);
+  box-shadow: var(--md-elevation-0);
+  transition:
+    background-color var(--md-duration-medium) var(--md-ease-standard),
+    box-shadow var(--md-duration-medium) var(--md-ease-standard);
+}
+
+.hero-card {
+  border-radius: var(--md-shape-xl);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  border-color: transparent;
+}
+
+.hero-card .muted,
+.hero-card .card-kicker {
+  color: color-mix(in oklab, var(--md-on-primary-container) 78%, transparent);
+}
+
+/* Buttons: M3 pill shape with a proper state layer instead of colour swaps. */
+.chip-button,
+.soft-button,
+.more-button,
+.date-button,
+.dismiss {
+  border-radius: var(--md-shape-full);
+  border: 1px solid var(--md-outline);
+  background: transparent;
+  color: var(--md-on-surface-variant);
+  position: relative;
+  isolation: isolate;
+  transition:
+    background-color var(--md-duration-short) var(--md-ease-standard),
+    border-color var(--md-duration-short) var(--md-ease-standard),
+    transform var(--md-duration-short) var(--md-ease-emphasized);
+}
+
+.chip-button::after,
+.soft-button::after,
+.more-button::after,
+.date-button::after,
+.dismiss::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity var(--md-duration-short) var(--md-ease-standard);
+}
+
+.chip-button:hover::after,
+.soft-button:hover::after,
+.more-button:hover::after,
+.date-button:hover::after,
+.dismiss:hover::after {
+  opacity: var(--md-state-hover);
+}
+
+.chip-button:active,
+.soft-button:active {
+  transform: scale(0.97);
+}
+
+.chip-button:active::after,
+.soft-button:active::after {
+  opacity: var(--md-state-press);
+}
+
+.chip-button.primary {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  border-color: transparent;
+}
+
+.chip-button:disabled {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+/* Focus: M3 uses a visible outline offset from the component. */
+.chip-button:focus-visible,
+.soft-button:focus-visible,
+.more-button:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+/* Progress + rings pick up the primary role automatically. */
+.progress-track {
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-highest);
+  overflow: hidden;
+}
+
+.progress-track > i {
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary);
+  transition: width var(--md-duration-long) var(--md-ease-emphasized-decelerate);
+}
+
+.mini-bars i {
+  border-radius: var(--md-shape-xs);
+  transition: height var(--md-duration-long) var(--md-ease-emphasized-decelerate);
+}
+
+/* Navigation bar: M3 pill-shaped active indicator. */
+.bottom-nav {
+  background: var(--md-surface-container);
+  border-top: 1px solid var(--md-outline-variant);
+  backdrop-filter: blur(16px);
+}
+
+/* Text fields: M3 filled variant. */
+.sensor-manual input,
+.number-field input,
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[inputmode='numeric'] {
+  border-radius: var(--md-shape-xs) var(--md-shape-xs) 0 0;
+  background: var(--md-surface-container-highest);
+  border: none;
+  border-bottom: 1px solid var(--md-on-surface-variant);
+  color: var(--md-on-surface);
+  transition: border-color var(--md-duration-short) var(--md-ease-standard);
+}
+
+.sensor-manual input:focus,
+.number-field input:focus {
+  border-bottom: 2px solid var(--md-primary);
+  outline: none;
+}
+
+/* Respect the OS reduced-motion setting: M3 motion is expressive, not forced. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

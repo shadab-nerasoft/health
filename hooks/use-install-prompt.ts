@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { isNativeApp } from '@/services/step-counter'
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
@@ -20,6 +21,9 @@ function isIOSSafari(): boolean {
 
 function isStandalone(): boolean {
   if (typeof window === 'undefined') return false
+  // Inside the Android app the user has already installed it; prompting them to
+  // "add to home screen" there is nonsense.
+  if (isNativeApp()) return true
   return (
     window.matchMedia('(display-mode: standalone)').matches ||
     (window.navigator as unknown as { standalone?: boolean }).standalone === true

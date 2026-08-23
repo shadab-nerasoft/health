@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Widget layout. RemoteViews only supports a fixed set of views, so this is
+  deliberately plain: no ConstraintLayout, no custom views, no vector
+  backgrounds beyond a shape drawable.
+
+  Colours come from the system dynamic palette on Android 12+ so the widget
+  matches the user's home screen rather than fighting it.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/widget_background">
+
+    <TextView
+        android:id="@+id/widget_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/widget_steps_today"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:textColor="@color/widget_on_surface_variant" />
+
+    <TextView
+        android:id="@+id/widget_steps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="0"
+        android:textSize="30sp"
+        android:textColor="@color/widget_on_surface" />
+
+    <ProgressBar
+        android:id="@+id/widget_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_marginTop="8dp"
+        android:max="100"
+        android:progress="0" />
+
+    <TextView
+        android:id="@+id/widget_caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="@string/widget_no_data"
+        android:textSize="12sp"
+        android:textColor="@color/widget_on_surface_variant" />
+</LinearLayout>

@@ -2,6 +2,8 @@
  * AI Continuous Diet, Meal & Weight Goal Notification Engine
  */
 
+import { apiUrl } from '@/lib/api-base'
+
 export interface AINudge {
   id: string
   title: string
@@ -130,7 +132,7 @@ export function generateDynamicNudgesFromState(
 
 export async function fetchAINudge(payload: any): Promise<AINudge> {
   try {
-    const res = await fetch('/api/ai/nudge', {
+    const res = await fetch(apiUrl('/api/ai/nudge'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload || {}),

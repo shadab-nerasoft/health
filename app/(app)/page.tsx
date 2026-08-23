@@ -72,7 +72,7 @@ export default function DashboardPage() {
             {dateLabel || 'Today'}
           </p>
           <h1>Your day so far</h1>
-          <p className="subheading">Everything here is measured on this device, in this browser.</p>
+          <p className="subheading">Everything here is measured on this device.</p>
         </div>
         <Link href="/activity" className="date-button">
           Activity <ArrowRight2 size="16" color="var(--muted-foreground)" />

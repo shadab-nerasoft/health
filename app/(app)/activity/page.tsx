@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Activity, TrendUp } from 'iconsax-react'
 import { Stagger, StaggerItem } from '@/components/wellness/motion'
-import { SensorPanel } from '@/components/wellness/sensor-panel'
 import { useTracking } from '@/components/wellness/tracking-provider'
 import { derivedFromSteps } from '@/lib/wellness/store'
 
@@ -30,7 +29,7 @@ export default function ActivityPage() {
         <div>
           <p className="eyebrow">Movement history</p>
           <h1>Activity</h1>
-          <p className="subheading">Steps recorded by this browser, grouped by day.</p>
+          <p className="subheading">Your recorded steps, grouped by day.</p>
         </div>
         <div className="filter-tabs">
           {ranges.map((item) => (
@@ -42,10 +41,6 @@ export default function ActivityPage() {
       </div>
 
       <Stagger className="dashboard-grid">
-        <StaggerItem style={{ gridColumn: '1 / -1' }}>
-          <SensorPanel />
-        </StaggerItem>
-
         <StaggerItem className="stat-grid" style={{ gridColumn: '1 / -1' }}>
           <div className="stat-card">
             <span>Steps today</span>

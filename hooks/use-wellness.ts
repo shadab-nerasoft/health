@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   type Goals,
   type Profile,
+  type WaterEntry,
+  type WeightEntry,
   type WellnessState,
   clearAll,
   derivedFromSteps,
@@ -17,6 +19,11 @@ import {
   subscribe,
   todayKey,
 } from '@/lib/wellness/store'
+
+/** Drops undefined keys so a partial cloud row cannot blank a local value. */
+function stripUndefined<T extends object>(value: T): Partial<T> {
+  return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined)) as Partial<T>
+}
 
 export function useWellness() {
   // Start from an empty state so the server and first client render match.
@@ -45,6 +52,76 @@ export function useWellness() {
       return { ...current, days: { ...current.days, [date]: { ...day, steps: Math.max(0, Math.round(amount)) } } }
     })
   }, [])
+
+  /**
+   * Overwrite per-day step totals from an authoritative source (the native
+   * Android counter), including days the app never had open. Water and other
+   * fields on those days are left alone.
+   */
+  const backfillSteps = useCallback((byDate: Record<string, number>) => {
+    const entries = Object.entries(byDate)
+    if (entries.length === 0) return
+    setState((current) => {
+      const days = { ...current.days }
+      let changed = false
+      for (const [date, steps] of entries) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(steps)) continue
+        const value = Math.max(0, Math.round(steps))
+        const day = days[date] ?? { date, steps: 0, waterMl: 0 }
+        if (day.steps === value) continue
+        days[date] = { ...day, steps: value }
+        changed = true
+      }
+      return changed ? { ...current, days } : current
+    })
+  }, [])
+
+  /**
+   * Apply values pulled from Supabase. Server data wins for profile and goals,
+   * which is what makes a reinstall or a second device come up correctly.
+   * Water and weight rows are merged by id/date rather than replaced, so
+   * anything logged locally while offline is not thrown away.
+   */
+  const hydrateFromCloud = useCallback(
+    (snapshot: {
+      profile: Partial<Profile> | null
+      goals: Partial<Goals> | null
+      waterEntries: WaterEntry[]
+      weights: WeightEntry[]
+    }) => {
+      setState((current) => {
+        const profile = snapshot.profile
+          ? { ...current.profile, ...stripUndefined(snapshot.profile) }
+          : current.profile
+        const goals = snapshot.goals ? { ...current.goals, ...stripUndefined(snapshot.goals) } : current.goals
+
+        const waterById = new Map(current.waterEntries.map((entry) => [entry.id, entry]))
+        for (const entry of snapshot.waterEntries) waterById.set(entry.id, entry)
+        const waterEntries = [...waterById.values()].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 200)
+
+        const weightByDate = new Map(current.weights.map((entry) => [entry.date, entry]))
+        for (const entry of snapshot.weights) {
+          if (!weightByDate.has(entry.date)) weightByDate.set(entry.date, entry)
+        }
+        const weights = [...weightByDate.values()].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 200)
+
+        // Day water totals are derived from the merged entries so the dashboard
+        // matches the log rather than double-counting a pulled row.
+        const days = { ...current.days }
+        const totals = new Map<string, number>()
+        for (const entry of waterEntries) {
+          totals.set(entry.date, (totals.get(entry.date) ?? 0) + entry.amount)
+        }
+        for (const [date, waterMl] of totals) {
+          const day = days[date] ?? { date, steps: 0, waterMl: 0 }
+          days[date] = { ...day, waterMl }
+        }
+
+        return { ...current, profile, goals, waterEntries, weights, days }
+      })
+    },
+    [],
+  )
 
   const addWater = useCallback((amount: number) => {
     if (amount <= 0) return
@@ -136,6 +213,8 @@ export function useWellness() {
     latestWeight: state.weights[0] ?? null,
     addSteps,
     setSteps,
+    backfillSteps,
+    hydrateFromCloud,
     addWater,
     undoWater,
     logWeight,

@@ -1,0 +1,401 @@
+/**
+ * Material 3 component layer.
+ *
+ * material3.css defines the token system; this applies it to the actual
+ * components — navigation bar, FAB, cards, switches, type scale. Split out so
+ * the token layer stays readable and this file can grow as more screens get
+ * the M3 treatment.
+ */
+
+/* ---------------------------------------------------------- metric cards */
+
+/* Each metric keeps its own hue so the grid reads as four distinct values
+   rather than one block of colour. Text uses the matching on-container tone,
+   which is what keeps them legible in both themes. */
+.metric-card {
+  min-height: 0;
+  padding: 18px;
+  border-radius: var(--md-shape-lg);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metric-card.blue {
+  background: var(--data-blue-container);
+  color: var(--data-blue-on-container);
+}
+.metric-card.green {
+  background: var(--data-green-container);
+  color: var(--data-green-on-container);
+}
+.metric-card.peach {
+  background: var(--data-amber-container);
+  color: var(--data-amber-on-container);
+}
+.metric-card.lavender {
+  background: var(--data-violet-container);
+  color: var(--data-violet-on-container);
+}
+
+.metric-card .metric-top span,
+.metric-card small {
+  color: color-mix(in oklab, currentColor 72%, transparent);
+}
+
+.metric-card strong {
+  margin-top: 10px;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: currentColor;
+}
+
+/* ------------------------------------------------------------------ hero */
+
+/* Calm rather than saturated: a bright neutral surface with the ring carrying
+   the accent. A fully saturated hero fights every card below it — which is
+   exactly what went wrong when it was mapped straight onto primary-container. */
+.hero-card {
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--md-shape-xl);
+  padding: 24px;
+}
+
+.hero-card h2 {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.hero-card .muted,
+.hero-card .card-kicker {
+  color: var(--md-on-surface-variant);
+}
+
+.step-ring {
+  transition: background var(--md-duration-extra-long) var(--md-ease-emphasized-decelerate);
+}
+
+/* ---------------------------------------------------- M3 navigation bar */
+
+@media (max-width: 900px) {
+  .bottom-nav {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
+    border: none;
+    border-top: 1px solid var(--md-outline-variant);
+    border-radius: 0;
+    background: var(--md-surface-container);
+    box-shadow: none;
+    backdrop-filter: none;
+    justify-content: space-evenly;
+  }
+
+  .bottom-nav .nav-item {
+    position: relative;
+    min-height: 56px;
+    gap: 5px;
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--md-on-surface-variant);
+    background: transparent;
+    isolation: isolate;
+  }
+
+  /* M3 active indicator: a pill behind the icon only, never the whole item.
+     It grows horizontally into place, which is the detail that makes an
+     Android nav bar feel like one. */
+  .bottom-nav .nav-item::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    width: 60px;
+    height: 32px;
+    transform: translateX(-50%) scaleX(0.4);
+    border-radius: var(--md-shape-full);
+    background: var(--md-secondary-container);
+    opacity: 0;
+    z-index: -1;
+    transition:
+      opacity var(--md-duration-medium) var(--md-ease-emphasized),
+      transform var(--md-duration-long) var(--md-ease-emphasized);
+  }
+
+  .bottom-nav .nav-item.active::before {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1);
+  }
+
+  .bottom-nav .nav-item.active {
+    color: var(--md-on-secondary-container);
+    font-weight: 600;
+  }
+
+  /* The nav is edge-to-edge now, so scrolling content has to clear it. */
+  .app-main,
+  .app-content,
+  .app-shell main {
+    padding-bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+}
+
+/* -------------------------------------------------------------- M3 FAB */
+
+/* M3 FABs are rounded squares in a container colour, not gradient circles, and
+   they sit clear of the navigation bar rather than on top of it. */
+.m3-fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(112px + env(safe-area-inset-bottom));
+  z-index: 30;
+  display: flex;
+  height: 56px;
+  width: 56px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--md-shape-lg);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  box-shadow: var(--md-elevation-3);
+  transition:
+    transform var(--md-duration-medium) var(--md-ease-emphasized),
+    box-shadow var(--md-duration-medium) var(--md-ease-standard);
+}
+
+.m3-fab:active {
+  transform: scale(0.92);
+  box-shadow: var(--md-elevation-1);
+}
+
+.m3-fab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: flex;
+  min-width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-error);
+  color: var(--md-on-error);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (min-width: 901px) {
+  .m3-fab {
+    bottom: 24px;
+    right: 24px;
+  }
+}
+
+/* ------------------------------------------------------------ M3 switch */
+
+.m3-switch {
+  position: relative;
+  display: inline-flex;
+  height: 32px;
+  width: 52px;
+  flex: none;
+  align-items: center;
+  padding: 0;
+  border: 2px solid var(--md-outline);
+  border-radius: var(--md-shape-full);
+  background: var(--md-surface-container-highest);
+  cursor: pointer;
+  transition:
+    background-color var(--md-duration-medium) var(--md-ease-emphasized),
+    border-color var(--md-duration-medium) var(--md-ease-emphasized);
+}
+
+.m3-switch[aria-checked="true"] {
+  background: var(--md-primary);
+  border-color: var(--md-primary);
+}
+
+/* The thumb growing as it travels is M3's signature switch detail. */
+.m3-switch::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  height: 16px;
+  width: 16px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-outline);
+  transition:
+    transform var(--md-duration-medium) var(--md-ease-emphasized),
+    height var(--md-duration-short) var(--md-ease-emphasized),
+    width var(--md-duration-short) var(--md-ease-emphasized),
+    background-color var(--md-duration-medium) var(--md-ease-emphasized);
+}
+
+.m3-switch[aria-checked="true"]::after {
+  height: 24px;
+  width: 24px;
+  left: 2px;
+  background: var(--md-on-primary);
+  transform: translateX(20px);
+}
+
+.m3-switch:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* -------------------------------------------------------- sensor panel */
+
+.sensor-panel {
+  padding: 18px;
+  border-radius: var(--md-shape-lg);
+  border: 1px solid var(--md-outline-variant);
+  background: var(--md-surface-container-low);
+  box-shadow: none;
+}
+
+.sensor-head strong {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.sensor-session {
+  text-align: right;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--md-on-surface);
+}
+
+.sensor-session em {
+  display: block;
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-on-surface-variant);
+}
+
+/* One row: label and description on the left, control on the right. */
+.m3-setting-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--md-outline-variant);
+}
+
+.m3-setting-row > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.m3-setting-row strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--md-on-surface);
+}
+
+.m3-setting-row p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--md-on-surface-variant);
+}
+
+/* Long-form help collapses behind a disclosure instead of dominating the card. */
+.m3-details {
+  margin-top: 14px;
+}
+
+.m3-details summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--md-primary);
+}
+
+.m3-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.m3-details p {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--md-on-surface-variant);
+}
+
+/* Status line for backup / sync state. */
+.m3-status-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--md-on-surface-variant);
+}
+
+/* -------------------------------------------------------------- type */
+
+/* M3's type scale runs lighter than the previous design. That weight drop is
+   most of what makes Material screens feel calm rather than shouty. */
+.page-heading h1 {
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.panel h2,
+.insight-card h2,
+.recommendation h2 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.card-kicker,
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--md-on-surface-variant);
+}
+
+.subheading {
+  color: var(--md-on-surface-variant);
+}
+
+.lock-state {
+  padding: 4px 12px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.lock-select {
+  flex: 1;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-shape-xs);
+  background: var(--md-surface-container-highest);
+  color: var(--md-on-surface);
+}

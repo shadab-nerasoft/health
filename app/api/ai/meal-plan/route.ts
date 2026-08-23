@@ -1,6 +1,7 @@
 import { generateText } from 'ai'
 import { z } from 'zod'
 import { zstepsModel } from '@/lib/ai/groq'
+import { preflight } from '@/lib/cors'
 
 const requestSchema = z.object({
   days: z.number().int().min(1).max(7).default(7),
@@ -33,4 +34,9 @@ export async function POST(request: Request) {
   } catch {
     return Response.json({ error: 'The plan could not be generated right now. Please try again.' }, { status: 502 })
   }
+}
+
+/** Preflight for the Android WebView origin. */
+export function OPTIONS() {
+  return preflight()
 }

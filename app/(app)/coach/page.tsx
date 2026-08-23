@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react'
 import { Stagger, StaggerItem } from '@/components/wellness/motion'
 import { useTracking } from '@/components/wellness/tracking-provider'
+import { apiUrl } from '@/lib/api-base'
 
 export default function CoachPage() {
   const { today, derived, goals, history } = useTracking()
@@ -22,7 +23,7 @@ export default function CoachPage() {
     const weeklyAverageSteps = Math.round(week.reduce((total, day) => total + day.steps, 0) / 7)
 
     try {
-      const response = await fetch('/api/ai/coach', {
+      const response = await fetch(apiUrl('/api/ai/coach'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

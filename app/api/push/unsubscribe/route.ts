@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { preflight } from '@/lib/cors'
 
 /**
  * Removes a push subscription so we stop sending to a dead endpoint.
@@ -32,4 +33,9 @@ export async function POST(req: Request) {
     console.error('Error removing push subscription:', error)
     return NextResponse.json({ error: 'Failed to remove subscription' }, { status: 500 })
   }
+}
+
+/** Preflight for the Android WebView origin. */
+export function OPTIONS() {
+  return preflight()
 }

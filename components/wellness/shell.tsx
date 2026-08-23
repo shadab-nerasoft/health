@@ -35,6 +35,7 @@ import { AlarmModal } from './alarm-modal'
 import { AlarmRingingModal } from './alarm-ringing-modal'
 import { FloatingAlarmButton } from './floating-alarm-button'
 import { useAlarmMonitor } from '@/lib/wellness/alarm-store'
+import { useNativeNotifications } from '@/hooks/use-native-notifications'
 import { Timer1 } from 'iconsax-react'
 
 type NavLinkDef = { href: string; label: string; icon: ComponentType<any> }
@@ -191,6 +192,9 @@ export function WellnessShell({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false)
 
   useAlarmMonitor()
+  // Hands the alarm triggers to Android so they fire with the app closed.
+  // The monitor above still drives the in-app ringing modal while it is open.
+  useNativeNotifications()
 
   useEffect(() => {
     const stored = window.localStorage.getItem('zsteps-sidebar-collapsed')

@@ -1,0 +1,254 @@
+/**
+ * Web-only pages: the admin analytics dashboard and the Android download page.
+ * Both live outside the app shell, so they style themselves from the same M3
+ * tokens rather than inheriting the dashboard layout.
+ */
+
+/* ------------------------------------------------------------- admin */
+
+.admin-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.admin-head h1 {
+  margin: 4px 0;
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.admin-ranges {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.admin-stats article {
+  padding: 18px;
+  border-radius: var(--md-shape-lg);
+  background: var(--md-surface-container-low);
+  border: 1px solid var(--md-outline-variant);
+}
+
+.admin-stats span {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-on-surface-variant);
+}
+
+.admin-stats strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.admin-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 160px;
+  margin-top: 16px;
+}
+
+.admin-bar {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.admin-bar i {
+  display: block;
+  width: 100%;
+  border-radius: var(--md-shape-xs) var(--md-shape-xs) 0 0;
+  background: var(--md-primary);
+  transition: height var(--md-duration-long) var(--md-ease-emphasized-decelerate);
+}
+
+/* Tables are the one thing guaranteed to overflow on a phone. */
+.admin-table-wrap {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.admin-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--md-on-surface-variant);
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.admin-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--md-surface-container);
+}
+
+.admin-note {
+  padding: 14px 16px;
+  border-radius: var(--md-shape-md);
+  background: var(--md-error-container);
+  color: var(--md-on-error-container);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------------------- download */
+
+.download-shell {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 56px 24px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.download-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.download-mark {
+  display: flex;
+  height: 68px;
+  width: 68px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  border-radius: var(--md-shape-lg);
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+
+.download-hero h1 {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.download-button {
+  margin-top: 20px;
+  padding: 16px 36px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: var(--md-elevation-1);
+  transition:
+    transform var(--md-duration-short) var(--md-ease-emphasized),
+    box-shadow var(--md-duration-short) var(--md-ease-standard);
+}
+
+.download-button:hover {
+  box-shadow: var(--md-elevation-3);
+}
+
+.download-button:active {
+  transform: scale(0.97);
+}
+
+.download-pending {
+  margin-top: 20px;
+  padding: 14px 18px;
+  border-radius: var(--md-shape-md);
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface-variant);
+  font-size: 13px;
+}
+
+.download-secondary {
+  margin-top: 14px;
+  color: var(--md-primary);
+  font-size: 14px;
+}
+
+.download-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.download-features article {
+  padding: 22px;
+  border-radius: var(--md-shape-lg);
+  background: var(--md-surface-container-low);
+  border: 1px solid var(--md-outline-variant);
+}
+
+.download-features h2 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.download-features p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--md-on-surface-variant);
+}
+
+.download-steps ol {
+  margin: 16px 0 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.download-steps h2 {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.download-note {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--md-on-surface-variant);
+}

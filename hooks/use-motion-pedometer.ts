@@ -11,6 +11,8 @@ const SMOOTHING = 0.28
 
 type Options = {
   paused?: boolean
+  /** Set false inside the native Android shell, where the native counter wins. */
+  enabled?: boolean
   onStep: (count: number) => void
 }
 
@@ -18,7 +20,7 @@ type Options = {
  * Counts walking steps from DeviceMotionEvent accelerometer peaks.
  * Browser sensors only run while this page is open and in the foreground.
  */
-export function useMotionPedometer({ paused = false, onStep }: Options) {
+export function useMotionPedometer({ paused = false, enabled = true, onStep }: Options) {
   const [status, setStatus] = useState<MotionStatus>('idle')
   const [sessionSteps, setSessionSteps] = useState(0)
   const [attempt, setAttempt] = useState(0)
@@ -70,7 +72,7 @@ export function useMotionPedometer({ paused = false, onStep }: Options) {
   }, [])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined' || !enabled) return
     let detached = false
     let listening = false
     let smoothed = 1
@@ -120,7 +122,7 @@ export function useMotionPedometer({ paused = false, onStep }: Options) {
       detached = true
       if (listening) window.removeEventListener('devicemotion', handleMotion)
     }
-  }, [ensurePermission, attempt])
+  }, [ensurePermission, attempt, enabled])
 
   const requestAccess = useCallback(async () => {
     const allowed = await ensurePermission(true)

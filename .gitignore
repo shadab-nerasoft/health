@@ -14,3 +14,11 @@ __v0_jsx-dev-runtime.ts
 node_modules
 .next/
 .DS_Store
+# Capacitor / Android
+mobile-build/
+android/keystore.properties
+android/**/*.jks
+android/**/*.keystore
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/google-services.json

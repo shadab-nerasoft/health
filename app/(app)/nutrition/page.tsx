@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Stagger, StaggerItem } from '@/components/wellness/motion'
 import { useTracking } from '@/components/wellness/tracking-provider'
+import { apiUrl } from '@/lib/api-base'
 
 export default function NutritionPage() {
   const { derived, history } = useTracking()
@@ -19,7 +20,7 @@ export default function NutritionPage() {
     const averageSteps = Math.round(week.reduce((total, day) => total + day.steps, 0) / 7)
 
     try {
-      const response = await fetch('/api/ai/meal-plan', {
+      const response = await fetch(apiUrl('/api/ai/meal-plan'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
